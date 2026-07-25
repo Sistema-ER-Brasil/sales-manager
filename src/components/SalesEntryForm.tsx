@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getTodayString, formatCurrency } from '../utils/formatters';
-import { PlusCircle, Save, CheckCircle2, ShoppingBag, Layers, AlertCircle, Plus, Trash2, Clock, Store, AlertTriangle } from 'lucide-react';
+import { PlusCircle, Save, CheckCircle2, ShoppingBag, Layers, AlertCircle, Plus, Trash2, Clock, Store, AlertTriangle, X } from 'lucide-react';
 
 export const SalesEntryForm: React.FC = () => {
   const { currentUser, marketplaces, companies, sales, addSale, addSalesBatch } = useApp();
@@ -47,6 +47,7 @@ export const SalesEntryForm: React.FC = () => {
 
   const [entryMode, setEntryMode] = useState<'single' | 'batch'>('single');
   const [successMessage, setSuccessMessage] = useState('');
+  const [showEntryModal, setShowEntryModal] = useState(false);
 
   // Batch rows state
   const [batchRows, setBatchRows] = useState([
@@ -94,6 +95,7 @@ export const SalesEntryForm: React.FC = () => {
     setQuantity(1);
     setTotalValue(0);
     setNotes('');
+    setShowEntryModal(false);
   };
 
   // Batch Handlers
@@ -146,6 +148,7 @@ export const SalesEntryForm: React.FC = () => {
     addSalesBatch(items);
     setSuccessMessage(`${items.length} lançamentos em lote gravados com sucesso!`);
     setTimeout(() => setSuccessMessage(''), 3000);
+    setShowEntryModal(false);
 
     setBatchRows([
       {
@@ -252,7 +255,7 @@ export const SalesEntryForm: React.FC = () => {
         </div>
       </div>
 
-      {/* Header & Mode Switcher */}
+      {/* Header & Trigger Button */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
@@ -264,33 +267,53 @@ export const SalesEntryForm: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-          <button
-            onClick={() => setEntryMode('single')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-              entryMode === 'single'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
-            }`}
-          >
-            Lançamento Simples
-          </button>
-          <button
-            onClick={() => setEntryMode('batch')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-              entryMode === 'batch'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
-            }`}
-          >
-            Lançamento em Lote (Múltiplos)
-          </button>
-        </div>
+        <button
+          onClick={() => setShowEntryModal(true)}
+          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-600/20 flex items-center gap-2 transition-all cursor-pointer"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Nova Venda</span>
+        </button>
       </div>
+
+      {/* ENTRY MODAL (Simple + Batch) */}
+      {showEntryModal && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in overflow-y-auto">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6 max-w-4xl w-full my-8">
+          <div className="flex items-center justify-between gap-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+              <button
+                onClick={() => setEntryMode('single')}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                  entryMode === 'single'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                }`}
+              >
+                Lançamento Simples
+              </button>
+              <button
+                onClick={() => setEntryMode('batch')}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                  entryMode === 'batch'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                }`}
+              >
+                Lançamento em Lote (Múltiplos)
+              </button>
+            </div>
+            <button
+              onClick={() => setShowEntryModal(false)}
+              className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
       {/* SINGLE ENTRY FORM */}
       {entryMode === 'single' ? (
-        <form onSubmit={handleSingleSubmit} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-6">
+        <form onSubmit={handleSingleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Field 1: Data */}
             <div>
@@ -425,7 +448,7 @@ export const SalesEntryForm: React.FC = () => {
         </form>
       ) : (
         /* BATCH ENTRY FORM */
-        <form onSubmit={handleBatchSubmit} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-4">
+        <form onSubmit={handleBatchSubmit} className="space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Tabela de Lançamento em Lote</span>
             <button
@@ -534,6 +557,9 @@ export const SalesEntryForm: React.FC = () => {
             <span>Gravar Todos os Lançamentos em Lote</span>
           </button>
         </form>
+      )}
+        </div>
+        </div>
       )}
     </div>
   );
