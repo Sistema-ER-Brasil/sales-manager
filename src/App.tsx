@@ -46,7 +46,7 @@ function MainApp() {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans overflow-hidden">
+    <div className="flex h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans overflow-hidden">
       {/* Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -54,7 +54,7 @@ function MainApp() {
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         <Header activeTab={activeTab} setActiveTab={setActiveTab} setIsAuthModalOpen={setIsAuthModalOpen} />
 
-        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
+        <main className="flex-1 overflow-y-auto bg-white dark:bg-slate-950">
           {activeTab === 'dashboard' && <DashboardView />}
           {activeTab === 'entry' && <SalesEntryForm />}
           {activeTab === 'history' && <SalesHistoryView />}
