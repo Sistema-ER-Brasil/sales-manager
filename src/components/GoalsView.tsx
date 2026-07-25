@@ -51,6 +51,9 @@ export const GoalsView: React.FC = () => {
   // Modal alert state
   const [showAlertModal, setShowAlertModal] = useState(false);
 
+  // Create Goal modal state
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
   // Audit log view/filter state
   const [showAuditModal, setShowAuditModal] = useState(false);
   const [searchLogQuery, setSearchLogQuery] = useState('');
@@ -165,10 +168,11 @@ export const GoalsView: React.FC = () => {
 
     addGoal(newGoal);
 
-    // Reset or notify
+    // Reset, notify and close modal
     setShowSuccessMsg(true);
     setTimeout(() => setShowSuccessMsg(false), 3000);
     setCustomTitle('');
+    setShowCreateModal(false);
   };
 
   const startEditGoal = (g: Goal) => {
@@ -228,6 +232,17 @@ export const GoalsView: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {/* New Goal Button (Admin only) */}
+          {isAdmin && (
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-extrabold text-xs rounded-xl shadow-md shadow-purple-600/20 flex items-center gap-2 transition-all cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Nova Meta</span>
+            </button>
+          )}
+
           {/* Audit Log Button */}
           <button
             onClick={() => setActiveTab('audit')}
@@ -297,9 +312,10 @@ export const GoalsView: React.FC = () => {
         </div>
       )}
 
-      {/* FORM DE CADASTRO DE METAS (APENAS PARA ADMINISTRADORES) */}
-      {isAdmin && (
-        <div className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 border border-purple-200 dark:border-purple-900/40 rounded-2xl p-5 shadow-xs space-y-4">
+      {/* CREATE GOAL MODAL (APENAS PARA ADMINISTRADORES) */}
+      {isAdmin && showCreateModal && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in overflow-y-auto">
+        <div className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 border border-purple-200 dark:border-purple-900/40 rounded-2xl p-5 shadow-2xl space-y-4 max-w-3xl w-full my-8">
           <div className="flex items-center justify-between pb-3 border-b border-purple-100 dark:border-purple-900/30">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
@@ -307,9 +323,17 @@ export const GoalsView: React.FC = () => {
                 Definir Nova Meta por CNPJ & Marketplace
               </h3>
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
-              Painel de Administrador
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
+                Painel de Administrador
+              </span>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           <form onSubmit={handleCreateGoal} className="space-y-4">
@@ -466,6 +490,7 @@ export const GoalsView: React.FC = () => {
               </div>
             )}
           </form>
+        </div>
         </div>
       )}
 
