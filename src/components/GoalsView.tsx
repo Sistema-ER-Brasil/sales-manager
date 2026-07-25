@@ -256,9 +256,9 @@ export const GoalsView: React.FC = () => {
           {totalAlertGoalsCount > 0 && (
             <button
               onClick={() => setShowAlertModal(true)}
-              className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-extrabold text-xs rounded-xl shadow-xs shadow-amber-500/20 flex items-center gap-2 transition-all cursor-pointer animate-pulse"
+              className="px-3 py-1.5 bg-blue-800 hover:bg-blue-900 active:bg-blue-900 text-white font-extrabold text-xs rounded-xl shadow-xs shadow-blue-800/20 flex items-center gap-2 transition-all cursor-pointer animate-pulse"
             >
-              <BellRing className="w-4 h-4 text-amber-100" />
+              <BellRing className="w-4 h-4 text-blue-100" />
               <span>{totalAlertGoalsCount} Alertas de Progresso (≥90%)</span>
             </button>
           )}
@@ -272,21 +272,21 @@ export const GoalsView: React.FC = () => {
 
       {/* ALERT BANNER SYSTEM (PROXIMO DE ATINGIR >=90%) */}
       {totalAlertGoalsCount > 0 && (
-        <div className="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 dark:from-amber-950/40 dark:via-orange-950/30 dark:to-amber-950/20 border border-amber-300 dark:border-amber-800/80 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
+        <div className="bg-gradient-to-r from-blue-800/10 via-blue-800/10 to-blue-800/5 dark:from-blue-950/40 dark:via-blue-950/30 dark:to-blue-950/20 border border-blue-300 dark:border-blue-950/80 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-start md:items-center gap-3">
-            <div className="p-2 bg-amber-500 text-white rounded-xl shadow-xs shrink-0">
+            <div className="p-2 bg-blue-800 text-white rounded-xl shadow-xs shrink-0">
               <Flame className="w-5 h-5 animate-bounce" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h4 className="text-xs font-extrabold text-amber-900 dark:text-amber-200 uppercase tracking-wide">
+                <h4 className="text-xs font-extrabold text-blue-950 dark:text-blue-200 uppercase tracking-wide">
                   Alerta de Atingimento de Metas
                 </h4>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-100">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-200 dark:bg-blue-950 text-blue-950 dark:text-blue-100">
                   {nearCompletionGoals.length} Quase Lá (≥90%) • {completedGoals.length} Batidas (100%)
                 </span>
               </div>
-              <p className="text-xs text-amber-800 dark:text-amber-300/90 mt-0.5">
+              <p className="text-xs text-blue-950 dark:text-blue-300/90 mt-0.5">
                 Você tem metas com alto índice de conclusão que exigem atenção dos administradores.
               </p>
             </div>
@@ -297,13 +297,13 @@ export const GoalsView: React.FC = () => {
               onClick={() => {
                 setFilterType('near_completion');
               }}
-              className="px-3 py-1.5 text-xs font-bold bg-white dark:bg-slate-800 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-all cursor-pointer"
+              className="px-3 py-1.5 text-xs font-bold bg-white dark:bg-slate-800 text-blue-950 dark:text-blue-200 border border-blue-300 dark:border-blue-900 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-all cursor-pointer"
             >
               Filtrar no Grid
             </button>
             <button
               onClick={() => setShowAlertModal(true)}
-              className="px-3 py-1.5 text-xs font-extrabold bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-3 py-1.5 text-xs font-extrabold bg-blue-900 hover:bg-blue-900 text-white rounded-xl shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Bell className="w-3.5 h-3.5" />
               <span>Ver Detalhes</span>
@@ -324,7 +324,7 @@ export const GoalsView: React.FC = () => {
               </h3>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950 text-blue-950 dark:text-blue-300">
                 Painel de Administrador
               </span>
               <button
@@ -518,8 +518,8 @@ export const GoalsView: React.FC = () => {
             onClick={() => setFilterType('near_completion')}
             className={`px-3 py-1 text-xs font-bold rounded-xl transition-all ${
               filterType === 'near_completion'
-                ? 'bg-amber-600 text-white'
-                : 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100'
+                ? 'bg-blue-900 text-white'
+                : 'bg-blue-50 dark:bg-blue-950/60 text-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-950 hover:bg-blue-100'
             }`}
           >
             🔥 Próximas de Atingir / Batidas ({totalAlertGoalsCount})
@@ -572,13 +572,13 @@ export const GoalsView: React.FC = () => {
                 isCompleted
                   ? 'border-emerald-500 dark:border-emerald-600 ring-2 ring-emerald-500/20'
                   : isNearCompletion
-                  ? 'border-amber-400 dark:border-amber-600 ring-2 ring-amber-500/20 shadow-amber-500/10'
+                  ? 'border-blue-400 dark:border-blue-900 ring-2 ring-blue-800/20 shadow-blue-800/10'
                   : 'border-slate-200 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-800'
               }`}
             >
               {/* Alert Ribbon Badge if Near Completion */}
               {isNearCompletion && (
-                <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-xl shadow-xs flex items-center gap-1 absolute top-0 right-0">
+                <div className="bg-gradient-to-r from-blue-800 to-blue-800 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-xl shadow-xs flex items-center gap-1 absolute top-0 right-0">
                   <Flame className="w-3 h-3 animate-pulse" />
                   <span>Quase lá! ({percent}%)</span>
                 </div>
@@ -655,11 +655,11 @@ export const GoalsView: React.FC = () => {
                       percent >= 100
                         ? 'text-emerald-600 dark:text-emerald-400 font-extrabold'
                         : percent >= 90
-                        ? 'text-amber-600 dark:text-amber-400 font-extrabold flex items-center gap-1'
+                        ? 'text-blue-900 dark:text-blue-400 font-extrabold flex items-center gap-1'
                         : 'text-purple-600 dark:text-purple-400'
                     }
                   >
-                    {percent >= 90 && percent < 100 && <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />}
+                    {percent >= 90 && percent < 100 && <AlertTriangle className="w-3.5 h-3.5 text-blue-800" />}
                     {percent}% Atingido
                   </span>
                   <span className="text-slate-600 dark:text-slate-300">
@@ -681,7 +681,7 @@ export const GoalsView: React.FC = () => {
                       percent >= 100
                         ? 'bg-emerald-500'
                         : percent >= 90
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 animate-pulse'
+                        ? 'bg-gradient-to-r from-blue-800 to-blue-800 animate-pulse'
                         : 'bg-purple-600'
                     }`}
                     style={{ width: `${percent}%` }}
@@ -696,8 +696,8 @@ export const GoalsView: React.FC = () => {
                   <strong
                     className={
                       percent >= 90 && percent < 100
-                        ? 'text-orange-600 dark:text-orange-400 font-extrabold'
-                        : 'text-amber-600 dark:text-amber-400 font-bold'
+                        ? 'text-blue-900 dark:text-blue-400 font-extrabold'
+                        : 'text-blue-900 dark:text-blue-400 font-bold'
                     }
                   >
                     {isQuantityMetric ? `${missing} un` : formatCurrency(missing)}
@@ -709,8 +709,8 @@ export const GoalsView: React.FC = () => {
                     <CheckCircle2 className="w-3.5 h-3.5" /> Meta Batida!
                   </span>
                 ) : percent >= 90 ? (
-                  <span className="text-amber-700 dark:text-amber-300 font-bold flex items-center gap-1 bg-amber-100 dark:bg-amber-950 px-2 py-0.5 rounded-full">
-                    <Flame className="w-3.5 h-3.5 text-orange-500" /> Apenas {100 - percent}% restante!
+                  <span className="text-blue-900 dark:text-blue-300 font-bold flex items-center gap-1 bg-blue-100 dark:bg-blue-950 px-2 py-0.5 rounded-full">
+                    <Flame className="w-3.5 h-3.5 text-blue-800" /> Apenas {100 - percent}% restante!
                   </span>
                 ) : null}
               </div>
@@ -883,7 +883,7 @@ export const GoalsView: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-xl w-full shadow-2xl space-y-5">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-2xl bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                <div className="p-2.5 rounded-2xl bg-blue-100 dark:bg-blue-950/80 text-blue-900 dark:text-blue-400 border border-blue-200 dark:border-blue-950">
                   <BellRing className="w-6 h-6 animate-bounce" />
                 </div>
                 <div>
@@ -907,8 +907,8 @@ export const GoalsView: React.FC = () => {
               {/* Section: Próximas de Atingir (90-99%) */}
               {nearCompletionGoals.length > 0 && (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-black text-amber-800 dark:text-amber-300 uppercase tracking-wider">
-                    <Flame className="w-4 h-4 text-orange-500" />
+                  <div className="flex items-center gap-2 text-xs font-black text-blue-950 dark:text-blue-300 uppercase tracking-wider">
+                    <Flame className="w-4 h-4 text-blue-800" />
                     <span>Próximas de Atingir ({nearCompletionGoals.length})</span>
                   </div>
 
@@ -916,7 +916,7 @@ export const GoalsView: React.FC = () => {
                     {nearCompletionGoals.map((gs) => (
                       <div
                         key={gs.goal.id}
-                        className="p-3 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-xl space-y-2"
+                        className="p-3 bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-950/60 rounded-xl space-y-2"
                       >
                         <div className="flex justify-between items-start">
                           <div>
@@ -927,7 +927,7 @@ export const GoalsView: React.FC = () => {
                               {gs.goal.targetName} {gs.goal.date && `(${formatDateBR(gs.goal.date)})`}
                             </div>
                           </div>
-                          <span className="text-xs font-black text-amber-700 dark:text-amber-300 bg-amber-200 dark:bg-amber-900 px-2 py-0.5 rounded-full">
+                          <span className="text-xs font-black text-blue-900 dark:text-blue-300 bg-blue-200 dark:bg-blue-950 px-2 py-0.5 rounded-full">
                             {gs.percent}%
                           </span>
                         </div>
@@ -941,7 +941,7 @@ export const GoalsView: React.FC = () => {
                           </span>
                           <span>
                             Falta:{' '}
-                            <strong className="text-amber-700 dark:text-amber-400">
+                            <strong className="text-blue-900 dark:text-blue-400">
                               {gs.isQuantityMetric ? `${gs.missing} un` : formatCurrency(gs.missing)}
                             </strong>
                           </span>

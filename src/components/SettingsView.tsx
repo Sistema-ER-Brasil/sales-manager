@@ -55,7 +55,7 @@ export const SettingsView: React.FC = () => {
               }`}
             >
               <div className="flex items-center gap-2">
-                <Sun className="w-5 h-5 text-amber-500" />
+                <Sun className="w-5 h-5 text-blue-800" />
                 <span className="font-bold text-xs text-slate-800">Tema Claro (Light Mode)</span>
               </div>
               {settings.theme === 'light' && <Check className="w-4 h-4 text-blue-600" />}
@@ -176,14 +176,14 @@ export const SettingsView: React.FC = () => {
         {/* Environment Variables Documentation */}
         <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
           <div className="flex items-center gap-2">
-            <Key className="w-4 h-4 text-amber-500" />
+            <Key className="w-4 h-4 text-blue-800" />
             <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">Variáveis de Ambiente do Sistema</h3>
           </div>
           <div className="p-4 bg-slate-900 text-slate-200 rounded-xl font-mono text-[11px] space-y-2 overflow-x-auto border border-slate-800">
             <div className="text-slate-400 font-sans font-bold mb-1">Arquivo `.env.local` / `.env.example` ativo:</div>
             <div className="text-emerald-400">GEMINI_API_KEY="SUA_CHAVE_GEMINI_API"</div>
-            <div className="text-amber-400">VITE_SUPABASE_URL="https://seu-projeto.supabase.co"</div>
-            <div className="text-amber-400">VITE_SUPABASE_ANON_KEY="sua-chave-anon"</div>
+            <div className="text-blue-400">VITE_SUPABASE_URL="https://seu-projeto.supabase.co"</div>
+            <div className="text-blue-400">VITE_SUPABASE_ANON_KEY="sua-chave-anon"</div>
             <div className="text-rose-400">SUPABASE_SERVICE_ROLE_KEY="apenas-no-servidor"</div>
           </div>
         </div>

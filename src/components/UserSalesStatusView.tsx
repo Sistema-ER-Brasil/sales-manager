@@ -162,14 +162,14 @@ export const UserSalesStatusView: React.FC = () => {
             className={`p-4 rounded-xl border flex items-center justify-between ${
               isAllFilled
                 ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
-                : 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-200 animate-pulse'
+                : 'bg-blue-50 dark:bg-blue-950/40 border-blue-300 dark:border-blue-950 text-blue-950 dark:text-blue-200 animate-pulse'
             }`}
           >
             <div className="flex items-center gap-3">
               {isAllFilled ? (
                 <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
               ) : (
-                <AlertTriangle className="w-6 h-6 text-amber-600 dark:text-amber-400 shrink-0" />
+                <AlertTriangle className="w-6 h-6 text-blue-900 dark:text-blue-400 shrink-0" />
               )}
               <div>
                 <div className="font-extrabold text-sm uppercase">
@@ -186,7 +186,7 @@ export const UserSalesStatusView: React.FC = () => {
             {!isAllFilled && (
               <button
                 onClick={() => setActiveTab('entry')}
-                className="px-3 py-1.5 text-xs font-extrabold bg-amber-600 hover:bg-amber-700 text-white rounded-lg shadow-2xs transition-all shrink-0"
+                className="px-3 py-1.5 text-xs font-extrabold bg-blue-900 hover:bg-blue-900 text-white rounded-lg shadow-2xs transition-all shrink-0"
               >
                 Lançar Vendas Agora
               </button>
@@ -211,7 +211,7 @@ export const UserSalesStatusView: React.FC = () => {
                     className={`p-3 rounded-xl border flex items-center justify-between ${
                       isLogged
                         ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50'
-                        : 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/50'
+                        : 'bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-950/50'
                     }`}
                   >
                     <div>
@@ -231,7 +231,7 @@ export const UserSalesStatusView: React.FC = () => {
                       ) : (
                         <button
                           onClick={() => setActiveTab('entry')}
-                          className="text-[10px] font-extrabold px-2 py-1 rounded bg-amber-600 text-white hover:bg-amber-700 uppercase transition-all"
+                          className="text-[10px] font-extrabold px-2 py-1 rounded bg-blue-900 text-white hover:bg-blue-900 uppercase transition-all"
                         >
                           Lançar
                         </button>
@@ -303,12 +303,12 @@ export const UserSalesStatusView: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-2.5 bg-amber-50/60 dark:bg-amber-950/30 rounded-lg border border-amber-200/50 dark:border-amber-900/40">
-            <div className="text-[10px] font-bold uppercase text-amber-700 dark:text-amber-400 flex items-center justify-between">
+          <div className="p-2.5 bg-blue-50/60 dark:bg-blue-950/30 rounded-lg border border-blue-200/50 dark:border-blue-950/40">
+            <div className="text-[10px] font-bold uppercase text-blue-900 dark:text-blue-400 flex items-center justify-between">
               <span>Pendentes / Não Lançaram</span>
               <AlertTriangle className="w-3.5 h-3.5" />
             </div>
-            <div className="text-lg font-black text-amber-700 dark:text-amber-400 mt-0.5">
+            <div className="text-lg font-black text-blue-900 dark:text-blue-400 mt-0.5">
               {pendingCount} <span className="text-xs font-bold">({100 - completionRate}%)</span>
             </div>
           </div>
@@ -351,8 +351,8 @@ export const UserSalesStatusView: React.FC = () => {
               onClick={() => setFilterStatus('PENDING')}
               className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all flex items-center gap-1 ${
                 filterStatus === 'PENDING'
-                  ? 'bg-amber-600 text-white shadow-2xs'
-                  : 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 hover:bg-amber-100'
+                  ? 'bg-blue-900 text-white shadow-2xs'
+                  : 'bg-blue-50 dark:bg-blue-950/50 text-blue-900 dark:text-blue-300 hover:bg-blue-100'
               }`}
             >
               <XCircle className="w-3 h-3" /> Pendentes ({pendingCount})
@@ -384,13 +384,13 @@ export const UserSalesStatusView: React.FC = () => {
               className={`bg-white dark:bg-slate-900 border rounded-xl p-4 shadow-2xs space-y-3 transition-all relative overflow-hidden ${
                 isDone
                   ? 'border-emerald-200 dark:border-emerald-900/50 hover:border-emerald-400'
-                  : 'border-amber-200 dark:border-amber-900/50 hover:border-amber-400'
+                  : 'border-blue-200 dark:border-blue-950/50 hover:border-blue-400'
               }`}
             >
               {/* Status Indicator Bar on Left */}
               <div
                 className={`absolute left-0 top-0 bottom-0 w-1.5 ${
-                  isDone ? 'bg-emerald-500' : 'bg-amber-500'
+                  isDone ? 'bg-emerald-500' : 'bg-blue-800'
                 }`}
               />
 
@@ -401,7 +401,7 @@ export const UserSalesStatusView: React.FC = () => {
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm text-white shrink-0 ${
                       isDone
                         ? 'bg-gradient-to-tr from-emerald-600 to-teal-500'
-                        : 'bg-gradient-to-tr from-amber-500 to-orange-500'
+                        : 'bg-gradient-to-tr from-blue-800 to-blue-800'
                     }`}
                   >
                     {u.name
@@ -435,8 +435,8 @@ export const UserSalesStatusView: React.FC = () => {
                       Lançado
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300/50 animate-pulse">
-                      <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    <span className="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-blue-100 text-blue-950 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-300/50 animate-pulse">
+                      <Clock className="w-3.5 h-3.5 text-blue-900 dark:text-blue-400" />
                       Não Lançou
                     </span>
                   )}
@@ -501,12 +501,12 @@ export const UserSalesStatusView: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="p-3 bg-amber-50/70 dark:bg-amber-950/40 rounded-lg border border-amber-200/80 dark:border-amber-900/60 text-xs text-amber-800 dark:text-amber-300 flex items-center justify-between ml-1">
+                <div className="p-3 bg-blue-50/70 dark:bg-blue-950/40 rounded-lg border border-blue-200/80 dark:border-blue-950/60 text-xs text-blue-950 dark:text-blue-300 flex items-center justify-between ml-1">
                   <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                    <AlertTriangle className="w-4 h-4 text-blue-900 dark:text-blue-400 shrink-0" />
                     <div>
                       <p className="font-bold leading-tight">Nenhuma venda lançada nesta data</p>
-                      <p className="text-[10px] text-amber-700 dark:text-amber-400 mt-0.5">
+                      <p className="text-[10px] text-blue-900 dark:text-blue-400 mt-0.5">
                         Aguardando atualização de faturamento pelo operador.
                       </p>
                     </div>
@@ -526,7 +526,7 @@ export const UserSalesStatusView: React.FC = () => {
                 ) : (
                   <button
                     onClick={() => handleSendReminder(u.name, u.id)}
-                    className="px-2.5 py-1 text-xs font-bold rounded-md bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-1 shadow-2xs transition-all"
+                    className="px-2.5 py-1 text-xs font-bold rounded-md bg-blue-900 hover:bg-blue-900 text-white flex items-center gap-1 shadow-2xs transition-all"
                   >
                     <BellRing className="w-3.5 h-3.5" />
                     {reminderSent[u.id] ? 'Lembrete Enviado!' : 'Notificar Vendedor'}
@@ -584,7 +584,7 @@ export const UserSalesStatusView: React.FC = () => {
                           ✓ LANÇADO ({d.salesCount})
                         </span>
                       ) : (
-                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-blue-100 text-blue-950 dark:bg-blue-950 dark:text-blue-300">
                           ✕ NÃO LANÇOU
                         </span>
                       )}

@@ -27,7 +27,7 @@ export const UsersView: React.FC = () => {
   if (!isAdmin) {
     return (
       <div className="p-8 text-center space-y-3">
-        <ShieldAlert className="w-12 h-12 text-amber-500 mx-auto" />
+        <ShieldAlert className="w-12 h-12 text-blue-800 mx-auto" />
         <h2 className="text-lg font-bold">Acesso Restrito</h2>
         <p className="text-xs text-slate-500">Apenas o Administrador pode gerenciar usuários e definir permissões de marketplaces.</p>
       </div>
@@ -151,7 +151,7 @@ export const UsersView: React.FC = () => {
                 </button>
                 <button
                   onClick={() => openEdit(u)}
-                  className="p-1 text-slate-400 hover:text-amber-600"
+                  className="p-1 text-slate-400 hover:text-blue-900"
                   title="Editar Dados do Usuário"
                 >
                   <Edit2 className="w-4 h-4" />

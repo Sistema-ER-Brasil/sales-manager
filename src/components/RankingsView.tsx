@@ -37,7 +37,7 @@ export const RankingsView: React.FC = () => {
       {/* Header Bar */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Trophy className="w-5 h-5 text-amber-500" />
+          <Trophy className="w-5 h-5 text-blue-800" />
           <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide">
             Rankings de Desempenho
           </h2>
@@ -98,8 +98,8 @@ export const RankingsView: React.FC = () => {
           </div>
 
           {/* #1 Gold */}
-          <div className="bg-gradient-to-b from-amber-50 to-white dark:from-amber-950/20 dark:to-slate-900 border-2 border-amber-400 rounded-2xl p-6 shadow-md text-center relative overflow-hidden order-1 sm:order-2">
-            <div className="w-10 h-10 rounded-full bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center mx-auto mb-2 shadow-lg shadow-amber-400/30">
+          <div className="bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-900 border-2 border-blue-400 rounded-2xl p-6 shadow-md text-center relative overflow-hidden order-1 sm:order-2">
+            <div className="w-10 h-10 rounded-full bg-blue-400 text-slate-950 font-black text-sm flex items-center justify-center mx-auto mb-2 shadow-lg shadow-blue-400/30">
               #1
             </div>
             <h3 className="font-extrabold text-base text-slate-900 dark:text-white truncate">{rankedList[0].name}</h3>
@@ -108,8 +108,8 @@ export const RankingsView: React.FC = () => {
           </div>
 
           {/* #3 Bronze */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs text-center relative overflow-hidden order-3 border-t-4 border-t-amber-700">
-            <div className="w-8 h-8 rounded-full bg-amber-700 text-white font-extrabold text-xs flex items-center justify-center mx-auto mb-2">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs text-center relative overflow-hidden order-3 border-t-4 border-t-blue-900">
+            <div className="w-8 h-8 rounded-full bg-blue-900 text-white font-extrabold text-xs flex items-center justify-center mx-auto mb-2">
               #3
             </div>
             <h3 className="font-extrabold text-sm text-slate-800 dark:text-slate-100 truncate">{rankedList[2].name}</h3>

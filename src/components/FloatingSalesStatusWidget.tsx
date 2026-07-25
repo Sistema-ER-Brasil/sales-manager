@@ -67,7 +67,7 @@ export const FloatingSalesStatusWidget: React.FC = () => {
                   className={`p-2 rounded-xl border text-xs flex items-center justify-between ${
                     m.isLogged
                       ? 'bg-emerald-50/60 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/50 text-emerald-900 dark:text-emerald-100'
-                      : 'bg-amber-50/80 dark:bg-amber-950/40 border-amber-300 dark:border-amber-900/60 text-amber-900 dark:text-amber-100'
+                      : 'bg-blue-50/80 dark:bg-blue-950/40 border-blue-300 dark:border-blue-950/60 text-blue-950 dark:text-blue-100'
                   }`}
                 >
                   <div>
@@ -83,7 +83,7 @@ export const FloatingSalesStatusWidget: React.FC = () => {
                         ✓ OK
                       </span>
                     ) : (
-                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-600 text-white uppercase animate-pulse">
+                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-blue-900 text-white uppercase animate-pulse">
                         ⏱ Falta
                       </span>
                     )}
@@ -114,7 +114,7 @@ export const FloatingSalesStatusWidget: React.FC = () => {
             className={`w-12 h-12 rounded-xl shadow-xl border flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 ${
               isFullyFilled
                 ? 'bg-emerald-600 border-emerald-400 text-white shadow-emerald-600/30'
-                : 'bg-amber-500 border-amber-300 text-white shadow-amber-500/40 animate-pulse'
+                : 'bg-blue-800 border-blue-300 text-white shadow-blue-800/40 animate-pulse'
             }`}
             title={isFullyFilled ? 'Vendas do dia preenchidas (Clique para ver detalhes)' : 'Atenção: Vendas pendentes para hoje! Clique para ver'}
           >
@@ -195,7 +195,7 @@ export const FloatingSalesStatusWidget: React.FC = () => {
           className={`w-12 h-12 rounded-xl shadow-xl border flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 ${
             pendingSellersCount === 0
               ? 'bg-blue-600 border-blue-400 text-white shadow-blue-600/30'
-              : 'bg-amber-500 border-amber-300 text-white shadow-amber-500/40 animate-pulse'
+              : 'bg-blue-800 border-blue-300 text-white shadow-blue-800/40 animate-pulse'
           }`}
           title="Status de Lançamento dos Vendedores"
         >

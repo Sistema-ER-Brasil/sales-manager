@@ -283,7 +283,7 @@ export const SalesHistoryView: React.FC = () => {
 
                         <button
                           onClick={() => setEditingSale(sale)}
-                          className="p-1.5 text-slate-500 hover:text-amber-600"
+                          className="p-1.5 text-slate-500 hover:text-blue-900"
                           title="Editar Registro"
                         >
                           <Edit2 className="w-4 h-4" />

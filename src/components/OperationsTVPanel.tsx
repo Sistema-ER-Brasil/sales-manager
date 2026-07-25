@@ -222,7 +222,7 @@ export const OperationsTVPanel: React.FC = () => {
           <div className="flex items-center justify-between text-xs text-slate-300">
             <span>Meta Alvo: <strong className="text-white font-mono">{formatCurrency(dailyGoal)}</strong></span>
             <span>Realizado: <strong className="text-emerald-400 font-mono">{formatCurrency(todayRevenue)}</strong></span>
-            <span>Falta: <strong className="text-amber-400 font-mono">{formatCurrency(remainingGoal)}</strong></span>
+            <span>Falta: <strong className="text-blue-400 font-mono">{formatCurrency(remainingGoal)}</strong></span>
           </div>
         </div>
       </div>
@@ -276,7 +276,7 @@ export const OperationsTVPanel: React.FC = () => {
         {/* Top 5 Products Ranking Today */}
         <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-4">
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-amber-400" />
+            <Trophy className="w-4 h-4 text-blue-400" />
             Top 5 Produtos Mais Vendidos Hoje
           </h2>
 
@@ -285,7 +285,7 @@ export const OperationsTVPanel: React.FC = () => {
               <div key={idx} className="bg-slate-950 p-3 rounded-xl border border-slate-800/80 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-xs ${
-                    idx === 0 ? 'bg-amber-400 text-slate-950' : idx === 1 ? 'bg-slate-300 text-slate-950' : idx === 2 ? 'bg-amber-700 text-white' : 'bg-slate-800 text-slate-300'
+                    idx === 0 ? 'bg-blue-400 text-slate-950' : idx === 1 ? 'bg-slate-300 text-slate-950' : idx === 2 ? 'bg-blue-900 text-white' : 'bg-slate-800 text-slate-300'
                   }`}>
                     {idx + 1}
                   </span>

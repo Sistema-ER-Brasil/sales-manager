@@ -181,14 +181,14 @@ export const SalesEntryForm: React.FC = () => {
         className={`border rounded-2xl p-4 shadow-2xs space-y-3 transition-all ${
           isFullyFilled
             ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800'
-            : 'bg-amber-50/70 dark:bg-amber-950/30 border-amber-300 dark:border-amber-800'
+            : 'bg-blue-50/70 dark:bg-blue-950/30 border-blue-300 dark:border-blue-950'
         }`}
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
             <div
               className={`p-2 rounded-xl text-white ${
-                isFullyFilled ? 'bg-emerald-600' : 'bg-amber-600 animate-pulse'
+                isFullyFilled ? 'bg-emerald-600' : 'bg-blue-900 animate-pulse'
               }`}
             >
               {isFullyFilled ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
@@ -202,7 +202,7 @@ export const SalesEntryForm: React.FC = () => {
                   className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase ${
                     isFullyFilled
                       ? 'bg-emerald-200 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100'
-                      : 'bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-100 animate-pulse'
+                      : 'bg-blue-200 text-blue-950 dark:bg-blue-950 dark:text-blue-100 animate-pulse'
                   }`}
                 >
                   {isFullyFilled ? '✓ 100% Preenchido' : `⚠️ ${pendingMarketplaces.length} Pendente(s)`}
@@ -236,7 +236,7 @@ export const SalesEntryForm: React.FC = () => {
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs ${
                   item.isFilled
                     ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300 hover:bg-emerald-200'
-                    : 'bg-white dark:bg-slate-900 text-amber-800 dark:text-amber-300 border-amber-400 hover:bg-amber-100/80'
+                    : 'bg-white dark:bg-slate-900 text-blue-950 dark:text-blue-300 border-blue-400 hover:bg-blue-100/80'
                 }`}
               >
                 <span>{m.name}</span>
@@ -245,7 +245,7 @@ export const SalesEntryForm: React.FC = () => {
                     ✓ Lançado ({formatCurrency(item.totalVal)})
                   </span>
                 ) : (
-                  <span className="text-[10px] bg-amber-600 text-white px-1.5 py-0.2 rounded font-black animate-pulse">
+                  <span className="text-[10px] bg-blue-900 text-white px-1.5 py-0.2 rounded font-black animate-pulse">
                     ⏱ Falta Preencher
                   </span>
                 )}

@@ -38,7 +38,7 @@ export const AiAnalysisModal: React.FC<AiAnalysisModalProps> = ({
             <div>
               <h3 className="font-bold text-sm flex items-center gap-1.5">
                 IA Analista de Vendas de Marketplaces
-                <Sparkles className="w-4 h-4 text-amber-400" />
+                <Sparkles className="w-4 h-4 text-blue-400" />
               </h3>
               <p className="text-[11px] text-slate-400">Resumo Executivo Gerado em Tempo Real</p>
             </div>

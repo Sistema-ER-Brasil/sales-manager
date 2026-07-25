@@ -64,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAu
             className="p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors"
             title="Alternar Tema Claro / Escuro"
           >
-            {settings.theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-amber-400" />}
+            {settings.theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-blue-400" />}
           </button>
 
           {/* Notifications Dropdown */}

@@ -3,7 +3,7 @@ import { CompanyCNPJ, Marketplace, User, Product, SaleItem, Goal, NotificationIt
 export const initialCompanies: CompanyCNPJ[] = [
   { id: 'ER2', code: 'ER2', name: 'ER2 Distribuidora E-commerce LTDA', cnpj: '12.345.678/0001-90', status: 'active', badgeColor: 'bg-blue-600 text-white' },
   { id: 'MD', code: 'MD', name: 'MD Comércio Eletrônico EIRELI', cnpj: '23.456.789/0001-01', status: 'active', badgeColor: 'bg-emerald-600 text-white' },
-  { id: 'Orange', code: 'Orange', name: 'Orange Digital Store LTDA', cnpj: '34.567.890/0001-12', status: 'active', badgeColor: 'bg-amber-600 text-white' },
+  { id: 'Orange', code: 'Orange', name: 'Orange Digital Store LTDA', cnpj: '34.567.890/0001-12', status: 'active', badgeColor: 'bg-blue-900 text-white' },
   { id: 'TTP', code: 'TTP', name: 'TTP Vendas Online LTDA', cnpj: '45.678.901/0001-23', status: 'active', badgeColor: 'bg-purple-600 text-white' },
   { id: 'SOEHT', code: 'SOEHT', name: 'SOEHT Import & Export E-commerce', cnpj: '56.789.012/0001-34', status: 'active', badgeColor: 'bg-indigo-600 text-white' },
 ];

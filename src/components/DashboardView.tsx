@@ -302,7 +302,7 @@ export const DashboardView: React.FC = () => {
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Ticket Médio
             </span>
-            <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+            <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-900 dark:text-blue-400">
               <CreditCard className="w-3.5 h-3.5" />
             </div>
           </div>

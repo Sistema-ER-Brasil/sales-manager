@@ -22,7 +22,7 @@ export const CadastrosView: React.FC = () => {
   if (!isAdmin) {
     return (
       <div className="p-8 text-center space-y-3">
-        <ShieldAlert className="w-12 h-12 text-amber-500 mx-auto" />
+        <ShieldAlert className="w-12 h-12 text-blue-800 mx-auto" />
         <h2 className="text-lg font-bold">Acesso Restrito</h2>
         <p className="text-xs text-slate-500">Apenas o Administrador pode acessar e alterar o cadastro de CNPJs e Marketplaces.</p>
       </div>
@@ -95,7 +95,7 @@ export const CadastrosView: React.FC = () => {
                     setCnpj(c.cnpj);
                     setCompModal(true);
                   }}
-                  className="p-1.5 text-slate-400 hover:text-amber-600"
+                  className="p-1.5 text-slate-400 hover:text-blue-900"
                 >
                   <Edit2 className="w-4 h-4" />
                 </button>
@@ -147,7 +147,7 @@ export const CadastrosView: React.FC = () => {
                     setMktColor(m.color);
                     setMktModal(true);
                   }}
-                  className="p-1 text-slate-400 hover:text-amber-600"
+                  className="p-1 text-slate-400 hover:text-blue-900"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
