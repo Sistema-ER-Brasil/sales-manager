@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Custom High Density Utility Classes & Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+.hd-card {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--color-slate-200, #e2e8f0);
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  padding: 0.875rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+}
+
+.dark .hd-card {
+  border-color: var(--color-slate-800, #1e293b);
+  background-color: var(--color-slate-900, #0f172a);
+  box-shadow: none;
+}
+
+.hd-table-th {
+  padding: 0.5rem 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hd-table-td {
+  padding: 0.5rem 0.625rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+

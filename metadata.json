@@ -1,0 +1,6 @@
+{
+  "name": "Marketplace Sales Manager",
+  "description": "Sistema Completo de Gestão de Vendas de Marketplaces com Dashboards em Tempo Real, Painel de Operações para TV, Metas, Rankings e Multi-CNPJ.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
