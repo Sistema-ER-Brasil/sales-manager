@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Settings, Sun, Moon, Volume2, VolumeX, Check, Database, Key, Trash2, RotateCcw, ShieldCheck, LogOut } from 'lucide-react';
+import { Settings, Volume2, VolumeX, Database, Key, Trash2, RotateCcw, ShieldCheck, LogOut } from 'lucide-react';
 
 export const SettingsView: React.FC = () => {
   const { settings, updateSettings, currentUser, sales, clearSampleData, restoreSampleData, logout } = useApp();
@@ -43,40 +43,9 @@ export const SettingsView: React.FC = () => {
         </div>
       )}
 
-      {/* Theme & Sound Settings */}
+      {/* Sound Settings */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-6">
         <div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-3 uppercase tracking-wider">Aparência do Painel</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() => updateSettings({ theme: 'light' })}
-              className={`p-4 rounded-xl border flex items-center justify-between transition-all cursor-pointer ${
-                settings.theme === 'light' ? 'border-blue-600 bg-blue-50/50 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <Sun className="w-5 h-5 text-blue-800" />
-                <span className="font-bold text-xs text-slate-800">Tema Claro (Light Mode)</span>
-              </div>
-              {settings.theme === 'light' && <Check className="w-4 h-4 text-blue-600" />}
-            </button>
-
-            <button
-              onClick={() => updateSettings({ theme: 'dark' })}
-              className={`p-4 rounded-xl border flex items-center justify-between transition-all cursor-pointer ${
-                settings.theme === 'dark' ? 'border-blue-600 bg-blue-900/30 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <Moon className="w-5 h-5 text-indigo-400" />
-                <span className="font-bold text-xs text-white">Tema Escuro (Dark Mode)</span>
-              </div>
-              {settings.theme === 'dark' && <Check className="w-4 h-4 text-blue-400" />}
-            </button>
-          </div>
-        </div>
-
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
           <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-3 uppercase tracking-wider">Sons & Notificações Operacionais</h3>
           <label className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800">
             <div className="flex items-center gap-2">

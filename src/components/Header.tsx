@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Bell,
-  Sun,
-  Moon,
   User,
   ShieldCheck,
   Check,
@@ -23,16 +21,12 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAuthModalOpen }) => {
-  const { currentUser, logout, settings, updateSettings, notifications, markNotificationRead, clearAllNotifications } = useApp();
+  const { currentUser, logout, notifications, markNotificationRead, clearAllNotifications } = useApp();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const toggleTheme = () => {
-    updateSettings({ theme: settings.theme === 'light' ? 'dark' : 'light' });
-  };
 
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 transition-colors shadow-2xs">
@@ -58,15 +52,6 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAu
 
         {/* Right: Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors"
-            title="Alternar Tema Claro / Escuro"
-          >
-            {settings.theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-blue-400" />}
-          </button>
-
           {/* Notifications Dropdown */}
           <div className="relative">
             <button

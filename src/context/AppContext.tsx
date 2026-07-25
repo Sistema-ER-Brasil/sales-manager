@@ -302,14 +302,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
   }, [isAuthenticated]);
 
-  // Theme side-effect
+  // Theme is fixed to light mode (dark mode disabled)
   useEffect(() => {
-    if (settings.theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [settings.theme]);
+    document.documentElement.classList.remove('dark');
+  }, []);
 
   // Audio trigger
   const playSaleSound = () => {
