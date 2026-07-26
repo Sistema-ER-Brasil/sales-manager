@@ -4,6 +4,7 @@ import { filterSalesByPeriodAndFilters } from '../utils/filterUtils';
 import { formatCurrency, formatDateBR, formatDateTimeBR } from '../utils/formatters';
 import { exportSalesToPDF, exportToExcel, exportToCSV } from '../utils/exportUtils';
 import { SaleItem } from '../types';
+import { ConfirmDialog } from './ConfirmDialog';
 import {
   History,
   Search,
@@ -24,6 +25,7 @@ export const SalesHistoryView: React.FC = () => {
     sales,
     companies,
     marketplaces,
+    users,
     currentUser,
     periodFilter,
     setPeriodFilter,
@@ -33,6 +35,8 @@ export const SalesHistoryView: React.FC = () => {
     setSelectedMarketplaceFilter,
     selectedCompanyFilter,
     setSelectedCompanyFilter,
+    historyUserFilter,
+    setHistoryUserFilter,
     updateSale,
     deleteSale,
     submitSaleForApproval,
@@ -44,6 +48,9 @@ export const SalesHistoryView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [editingSale, setEditingSale] = useState<SaleItem | null>(null);
   const [viewingAuditSale, setViewingAuditSale] = useState<SaleItem | null>(null);
+  const [confirmAction, setConfirmAction] = useState<
+    { type: 'submit' | 'delete'; sale: SaleItem } | null
+  >(null);
 
   // Filtered sales
   let filtered = filterSalesByPeriodAndFilters(
@@ -53,6 +60,12 @@ export const SalesHistoryView: React.FC = () => {
     selectedMarketplaceFilter,
     selectedCompanyFilter
   );
+
+  // Filter to a specific seller (e.g. navigated here from "Ver vendas de X")
+  const filteredUserName = historyUserFilter ? users.find((u) => u.id === historyUserFilter)?.name : null;
+  if (historyUserFilter) {
+    filtered = filtered.filter((s) => s.createdByUserId === historyUserFilter);
+  }
 
   // User permission check
   if (!isAdmin) {
@@ -216,6 +229,17 @@ export const SalesHistoryView: React.FC = () => {
             ))}
           </select>
         </div>
+
+        {filteredUserName && (
+          <div className="flex items-center gap-2 pt-1">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300">
+              Filtrando por vendedor: {filteredUserName}
+              <button onClick={() => setHistoryUserFilter('')} className="hover:text-blue-950 dark:hover:text-white">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </span>
+          </div>
+        )}
       </div>
 
       {/* SALES HISTORY TABLE */}
@@ -317,11 +341,7 @@ export const SalesHistoryView: React.FC = () => {
 
                         {canSubmit && (
                           <button
-                            onClick={() => {
-                              if (confirm('Enviar esta venda para aprovação? Depois de enviada, não será mais possível editá-la.')) {
-                                submitSaleForApproval(sale.id);
-                              }
-                            }}
+                            onClick={() => setConfirmAction({ type: 'submit', sale })}
                             className="p-1.5 text-slate-500 hover:text-blue-600"
                             title="Enviar para Aprovação"
                           >
@@ -341,11 +361,7 @@ export const SalesHistoryView: React.FC = () => {
 
                         {isAdmin && (
                           <button
-                            onClick={() => {
-                              if (confirm('Tem certeza que deseja excluir este registro de venda?')) {
-                                deleteSale(sale.id);
-                              }
-                            }}
+                            onClick={() => setConfirmAction({ type: 'delete', sale })}
                             className="p-1.5 text-slate-500 hover:text-blue-600"
                             title="Excluir Registro"
                           >
@@ -456,6 +472,26 @@ export const SalesHistoryView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* CONFIRM ACTION DIALOG */}
+      <ConfirmDialog
+        isOpen={confirmAction !== null}
+        title={confirmAction?.type === 'submit' ? 'Enviar para Aprovação' : 'Excluir Registro de Venda'}
+        message={
+          confirmAction?.type === 'submit'
+            ? 'Enviar esta venda para aprovação do administrador? Depois de enviada, você não conseguirá mais editá-la.'
+            : 'Tem certeza que deseja excluir este registro de venda? Esta ação não pode ser desfeita.'
+        }
+        confirmLabel={confirmAction?.type === 'submit' ? 'Enviar' : 'Excluir'}
+        variant={confirmAction?.type === 'delete' ? 'danger' : 'default'}
+        onCancel={() => setConfirmAction(null)}
+        onConfirm={() => {
+          if (!confirmAction) return;
+          if (confirmAction.type === 'submit') submitSaleForApproval(confirmAction.sale.id);
+          if (confirmAction.type === 'delete') deleteSale(confirmAction.sale.id);
+          setConfirmAction(null);
+        }}
+      />
     </div>
   );
 };

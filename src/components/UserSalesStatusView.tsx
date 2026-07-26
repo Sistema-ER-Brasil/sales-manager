@@ -22,12 +22,13 @@ import {
 import { formatCurrency, formatNumber, getTodayString } from '../utils/formatters';
 
 export const UserSalesStatusView: React.FC = () => {
-  const { 
-    users, 
-    sales, 
-    marketplaces, 
-    setActiveTab, 
-    currentUser 
+  const {
+    users,
+    sales,
+    marketplaces,
+    setActiveTab,
+    currentUser,
+    setHistoryUserFilter,
   } = useApp();
 
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
@@ -518,7 +519,10 @@ export const UserSalesStatusView: React.FC = () => {
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between pl-1">
                 {isDone ? (
                   <button
-                    onClick={() => setActiveTab('history')}
+                    onClick={() => {
+                      setHistoryUserFilter(u.id);
+                      setActiveTab('history');
+                    }}
                     className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
                   >
                     <Eye className="w-3.5 h-3.5" /> Ver vendas de {u.name.split(' ')[0]}

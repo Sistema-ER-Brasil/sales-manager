@@ -78,6 +78,8 @@ interface AppContextType {
   setSelectedMarketplaceFilter: (id: string) => void;
   selectedCompanyFilter: string;
   setSelectedCompanyFilter: (id: string) => void;
+  historyUserFilter: string;
+  setHistoryUserFilter: (userId: string) => void;
 
   // Actions
   addSale: (sale: Omit<SaleItem, 'id' | 'createdAt' | 'createdByUserId' | 'createdByName' | 'status'>) => void;
@@ -158,6 +160,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
   const [selectedMarketplaceFilter, setSelectedMarketplaceFilter] = useState<string>('ALL');
   const [selectedCompanyFilter, setSelectedCompanyFilter] = useState<string>('ALL');
+  const [historyUserFilter, setHistoryUserFilter] = useState<string>('');
 
   const [lastSaleTimestamp, setLastSaleTimestamp] = useState<number>(Date.now());
 
@@ -832,6 +835,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setSelectedMarketplaceFilter,
         selectedCompanyFilter,
         setSelectedCompanyFilter,
+        historyUserFilter,
+        setHistoryUserFilter,
         addSale,
         addSalesBatch,
         updateSale,

@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { User } from '../types';
 import { Users, Plus, Edit2, Trash2, ShieldAlert, Check, X, Store, Building2, KeyRound, AlertCircle, Camera, Loader2 } from 'lucide-react';
 import { ChangePasswordModal } from './ChangePasswordModal';
+import { ConfirmDialog } from './ConfirmDialog';
 import { uploadLogoImage } from '../lib/upload';
 
 export const UsersView: React.FC = () => {
@@ -134,13 +135,19 @@ export const UsersView: React.FC = () => {
     setModalOpen(false);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.')) return;
+  const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
+  const [deleteError, setDeleteError] = useState('');
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const id = deleteTarget.id;
+    setDeleteTarget(null);
     setDeletingId(id);
     const result = await deleteUser(id);
     setDeletingId(null);
     if (!result.success) {
-      alert(result.message || 'Erro ao excluir usuário.');
+      setDeleteError(result.message || 'Erro ao excluir usuário.');
+      setTimeout(() => setDeleteError(''), 5000);
     }
   };
 
@@ -161,6 +168,13 @@ export const UsersView: React.FC = () => {
           <Plus className="w-4 h-4" /> Cadastrar Novo Usuário
         </button>
       </div>
+
+      {deleteError && (
+        <div className="p-3 bg-blue-50 border border-blue-200 dark:bg-blue-950/50 dark:border-blue-800 text-blue-700 dark:text-blue-300 rounded-xl text-xs font-semibold flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{deleteError}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {users.map((u) => (
@@ -193,7 +207,7 @@ export const UsersView: React.FC = () => {
                 </button>
                 {u.id !== currentUser.id && (
                   <button
-                    onClick={() => handleDelete(u.id)}
+                    onClick={() => setDeleteTarget(u)}
                     disabled={deletingId === u.id}
                     className="p-1 text-slate-400 hover:text-blue-600 disabled:opacity-50"
                     title="Excluir Usuário"
@@ -435,6 +449,17 @@ export const UsersView: React.FC = () => {
         isOpen={changePasswordModalOpen}
         onClose={() => setChangePasswordModalOpen(false)}
         targetUser={passwordTargetUser}
+      />
+
+      {/* DELETE CONFIRM DIALOG */}
+      <ConfirmDialog
+        isOpen={deleteTarget !== null}
+        title="Excluir Usuário"
+        message={`Tem certeza que deseja excluir "${deleteTarget?.name}"? Esta ação não pode ser desfeita.`}
+        confirmLabel="Excluir"
+        variant="danger"
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
       />
     </div>
   );
