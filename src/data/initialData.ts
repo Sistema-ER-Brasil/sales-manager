@@ -30,6 +30,7 @@ export const initialUsers: User[] = [
     email: 'ecommerce@erdobrasil.com.br',
     role: 'admin',
     assignedMarketplaces: ['shopee', 'mercadolivre', 'amazon', 'magalu', 'site', 'shein', 'tiktok', 'americanas', 'casasbahia', 'madeiramadeira'],
+    assignedCompanies: ['ER2', 'MD', 'Orange', 'TTP', 'SOEHT'],
     status: 'active',
   },
 ];

@@ -22,6 +22,7 @@ import { getTodayString } from '../utils/formatters';
 import { supabase } from '../lib/supabaseClient';
 import {
   rowToUser,
+  packAssignments,
   rowToCompany,
   companyToRow,
   rowToMarketplace,
@@ -48,6 +49,7 @@ const GUEST_USER: User = {
   email: '',
   role: 'user',
   assignedMarketplaces: [],
+  assignedCompanies: [],
   status: 'active',
 };
 
@@ -606,6 +608,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           name: u.name,
           role: u.role,
           assignedMarketplaces: u.assignedMarketplaces,
+          assignedCompanies: u.assignedCompanies,
         }),
       });
       const json = await res.json();
@@ -617,6 +620,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         email: u.email,
         role: u.role,
         assignedMarketplaces: u.assignedMarketplaces,
+        assignedCompanies: u.assignedCompanies,
         status: 'active',
       };
       setUsers((prev) => [...prev, newUser]);
@@ -636,7 +640,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         .update({
           name: profile.name,
           role: profile.role,
-          assigned_marketplaces: profile.assignedMarketplaces,
+          assigned_marketplaces: packAssignments(profile.assignedMarketplaces, profile.assignedCompanies),
           status: profile.status,
         })
         .eq('id', profile.id);

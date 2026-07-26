@@ -12,16 +12,29 @@ import {
 
 // ---- Supabase row shapes (snake_case) <-> app types (camelCase) ----
 
+// Company assignments are packed into the same `assigned_marketplaces` text[]
+// column using a "cnpj:" prefix, avoiding a schema migration (no separate
+// assigned_companies column exists in the DB). See packAssignments below.
+const CNPJ_PREFIX = 'cnpj:';
+
 export function rowToUser(row: any): User {
+  const rawAssignments: string[] = row.assigned_marketplaces || [];
   return {
     id: row.id,
     name: row.name,
     email: row.email,
     role: row.role,
-    assignedMarketplaces: row.assigned_marketplaces || [],
+    assignedMarketplaces: rawAssignments.filter((a) => !a.startsWith(CNPJ_PREFIX)),
+    assignedCompanies: rawAssignments
+      .filter((a) => a.startsWith(CNPJ_PREFIX))
+      .map((a) => a.slice(CNPJ_PREFIX.length)),
     avatar: row.avatar || undefined,
     status: row.status,
   };
+}
+
+export function packAssignments(assignedMarketplaces: string[], assignedCompanies: string[]): string[] {
+  return [...assignedMarketplaces, ...assignedCompanies.map((c) => `${CNPJ_PREFIX}${c}`)];
 }
 
 export function rowToCompany(row: any): CompanyCNPJ {

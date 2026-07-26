@@ -13,6 +13,11 @@ export const SalesEntryForm: React.FC = () => {
     isAdmin ? true : currentUser.assignedMarketplaces.includes(m.id) || currentUser.assignedMarketplaces.includes(m.slug)
   );
 
+  // Filter companies (CNPJs) permitted for user
+  const availableCompanies = companies.filter((c) =>
+    isAdmin ? true : currentUser.assignedCompanies.includes(c.id) || currentUser.assignedCompanies.includes(c.code)
+  );
+
   // User's assigned marketplaces daily status check
   const todayStr = getTodayString();
   const userTodaySales = sales.filter((s) => {
@@ -39,7 +44,7 @@ export const SalesEntryForm: React.FC = () => {
   // Single form state
   const [date, setDate] = useState(getTodayString());
   const [marketplaceId, setMarketplaceId] = useState(availableMarketplaces[0]?.id || 'shopee');
-  const [companyId, setCompanyId] = useState('ER2');
+  const [companyId, setCompanyId] = useState(availableCompanies[0]?.code || 'ER2');
   const [productName, setProductName] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [totalValue, setTotalValue] = useState(0);
@@ -55,7 +60,7 @@ export const SalesEntryForm: React.FC = () => {
       id: 1,
       date: getTodayString(),
       marketplaceId: availableMarketplaces[0]?.id || 'shopee',
-      companyId: 'ER2',
+      companyId: availableCompanies[0]?.code || 'ER2',
       productName: '',
       quantity: 1,
       totalValue: 0,
@@ -106,7 +111,7 @@ export const SalesEntryForm: React.FC = () => {
         id: Date.now(),
         date: getTodayString(),
         marketplaceId: availableMarketplaces[0]?.id || 'shopee',
-        companyId: 'ER2',
+        companyId: availableCompanies[0]?.code || 'ER2',
         productName: '',
         quantity: 1,
         totalValue: 0,
@@ -155,7 +160,7 @@ export const SalesEntryForm: React.FC = () => {
         id: Date.now(),
         date: getTodayString(),
         marketplaceId: availableMarketplaces[0]?.id || 'shopee',
-        companyId: 'ER2',
+        companyId: availableCompanies[0]?.code || 'ER2',
         productName: '',
         quantity: 1,
         totalValue: 0,
@@ -359,7 +364,7 @@ export const SalesEntryForm: React.FC = () => {
                 onChange={(e) => setCompanyId(e.target.value)}
                 className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-semibold focus:ring-2 focus:ring-blue-500"
               >
-                {companies.map((c) => (
+                {availableCompanies.map((c) => (
                   <option key={c.id} value={c.code}>
                     {c.code} - {c.name}
                   </option>
@@ -501,7 +506,7 @@ export const SalesEntryForm: React.FC = () => {
                         onChange={(e) => updateBatchRow(row.id, 'companyId', e.target.value)}
                         className="w-full p-1.5 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
                       >
-                        {companies.map((c) => (
+                        {availableCompanies.map((c) => (
                           <option key={c.id} value={c.code}>{c.code}</option>
                         ))}
                       </select>

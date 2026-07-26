@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { User } from '../types';
-import { Users, Plus, Edit2, Trash2, ShieldAlert, Check, X, Store, KeyRound, AlertCircle } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, ShieldAlert, Check, X, Store, Building2, KeyRound, AlertCircle } from 'lucide-react';
 import { ChangePasswordModal } from './ChangePasswordModal';
 
 export const UsersView: React.FC = () => {
-  const { users, marketplaces, addUser, updateUser, deleteUser, currentUser } = useApp();
+  const { users, marketplaces, companies, addUser, updateUser, deleteUser, currentUser } = useApp();
   const isAdmin = currentUser.role === 'admin';
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -16,6 +16,7 @@ export const UsersView: React.FC = () => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'admin' | 'user'>('user');
   const [assignedMarketplaces, setAssignedMarketplaces] = useState<string[]>([]);
+  const [assignedCompanies, setAssignedCompanies] = useState<string[]>([]);
   const [formError, setFormError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -41,6 +42,7 @@ export const UsersView: React.FC = () => {
     setPassword('');
     setRole('user');
     setAssignedMarketplaces(['shopee']);
+    setAssignedCompanies([]);
     setFormError('');
     setModalOpen(true);
   };
@@ -52,6 +54,7 @@ export const UsersView: React.FC = () => {
     setPassword('');
     setRole(u.role);
     setAssignedMarketplaces(u.assignedMarketplaces || []);
+    setAssignedCompanies(u.assignedCompanies || []);
     setFormError('');
     setModalOpen(true);
   };
@@ -67,6 +70,12 @@ export const UsersView: React.FC = () => {
     );
   };
 
+  const toggleCompanySelection = (companyCode: string) => {
+    setAssignedCompanies((prev) =>
+      prev.includes(companyCode) ? prev.filter((code) => code !== companyCode) : [...prev, companyCode]
+    );
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
@@ -79,6 +88,7 @@ export const UsersView: React.FC = () => {
           email,
           role,
           assignedMarketplaces,
+          assignedCompanies,
           ...(password ? { password } : {}),
         })
       : await addUser({
@@ -86,6 +96,7 @@ export const UsersView: React.FC = () => {
           email,
           role,
           assignedMarketplaces,
+          assignedCompanies,
           status: 'active',
           password,
         });
@@ -194,6 +205,29 @@ export const UsersView: React.FC = () => {
                 )}
               </div>
             </div>
+
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+              <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
+                <Building2 className="w-3 h-3 text-blue-500" /> CNPJs Sob Responsabilidade:
+              </span>
+
+              <div className="flex flex-wrap gap-1">
+                {u.role === 'admin' ? (
+                  <span className="text-xs text-blue-600 dark:text-blue-400 font-bold">Todos os CNPJs (Acesso Total)</span>
+                ) : (u.assignedCompanies || []).length === 0 ? (
+                  <span className="text-xs text-slate-400 font-medium">Nenhum CNPJ atribuído</span>
+                ) : (
+                  (u.assignedCompanies || []).map((cId) => {
+                    const cObj = companies.find((item) => item.id === cId || item.code === cId);
+                    return (
+                      <span key={cId} className="bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-[10px] font-bold px-2 py-0.5 rounded">
+                        {cObj ? cObj.code : cId}
+                      </span>
+                    );
+                  })
+                )}
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -286,6 +320,32 @@ export const UsersView: React.FC = () => {
                         >
                           <span className="truncate">{m.name}</span>
                           {isSel && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {role === 'user' && (
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-2">Selecione os CNPJs Sob Responsabilidade:</label>
+                  <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                    {companies.map((c) => {
+                      const isSel = assignedCompanies.includes(c.id) || assignedCompanies.includes(c.code);
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => toggleCompanySelection(c.code)}
+                          className={`p-2 rounded-lg border text-left flex items-center justify-between transition-colors ${
+                            isSel
+                              ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 font-bold'
+                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
+                          <span className="truncate">{c.code} - {c.name}</span>
+                          {isSel && <Check className="w-3.5 h-3.5 text-blue-600 shrink-0" />}
                         </button>
                       );
                     })}

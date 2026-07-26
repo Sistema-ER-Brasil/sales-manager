@@ -109,7 +109,7 @@ app.post("/api/admin/users", async (req, res) => {
   const auth = await requireAdmin(req);
   if (!auth.ok) return res.status(auth.status).json({ success: false, error: auth.error });
 
-  const { email, password, name, role, assignedMarketplaces } = req.body || {};
+  const { email, password, name, role, assignedMarketplaces, assignedCompanies } = req.body || {};
   if (!email || !password || !name) {
     return res.status(400).json({ success: false, error: "Nome, e-mail e senha são obrigatórios." });
   }
@@ -129,7 +129,10 @@ app.post("/api/admin/users", async (req, res) => {
     .update({
       name,
       role: role || "user",
-      assigned_marketplaces: assignedMarketplaces || [],
+      assigned_marketplaces: [
+        ...(assignedMarketplaces || []),
+        ...(assignedCompanies || []).map((c: string) => `cnpj:${c}`),
+      ],
     })
     .eq("id", data.user.id);
   if (profileError) {

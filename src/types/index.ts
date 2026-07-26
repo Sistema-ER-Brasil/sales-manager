@@ -6,6 +6,7 @@ export interface User {
   email: string;
   role: UserRole;
   assignedMarketplaces: string[]; // marketplace ids or slugs
+  assignedCompanies: string[]; // company ids or codes (CNPJs the user is responsible for)
   avatar?: string;
   status: 'active' | 'inactive';
 }
