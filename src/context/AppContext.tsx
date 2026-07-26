@@ -112,6 +112,7 @@ interface AppContextType {
   updateSettings: (settings: Partial<SystemSettings>) => void;
   markNotificationRead: (id: string) => void;
   clearAllNotifications: () => void;
+  sendReminderNotification: (targetUserId: string, targetUserName: string) => void;
 
   importSalesData: (importedSales: Partial<SaleItem>[]) => void;
   playSaleSound: () => void;
@@ -749,14 +750,34 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const clearAllNotifications = () => {
-    const ids = notifications.map((n) => n.id);
-    setNotifications([]);
+    const ids = notifications
+      .filter((n) => !n.targetUserId || n.targetUserId === currentUser.id)
+      .map((n) => n.id);
+    setNotifications((prev) => prev.filter((n) => !ids.includes(n.id)));
     if (ids.length) {
       (async () => {
         const { error } = await supabase.from('notifications').delete().in('id', ids);
         if (error) console.error('Erro ao limpar notificações:', error.message);
       })();
     }
+  };
+
+  const sendReminderNotification = (targetUserId: string, targetUserName: string) => {
+    const newNotif: NotificationItem = {
+      id: `notif_${Date.now()}`,
+      type: 'system',
+      title: 'Lembrete de Lançamento de Vendas',
+      message: `${currentUser.name} pediu que você lance suas vendas de hoje o quanto antes.`,
+      read: false,
+      createdAt: new Date().toISOString(),
+      targetUserId,
+    };
+    setNotifications((prev) => [newNotif, ...prev]);
+    addAuditLog('CREATE', 'users', `Lembrete de lançamento enviado para ${targetUserName}`);
+    (async () => {
+      const { error } = await supabase.from('notifications').insert(notificationToRow(newNotif));
+      if (error) console.error('Erro ao enviar lembrete:', error.message);
+    })();
   };
 
   const importSalesData = (importedSales: Partial<SaleItem>[]) => {
@@ -811,6 +832,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     })();
   };
 
+  // Only show notifications broadcast to everyone (no target) or targeted at this user
+  const visibleNotifications = notifications.filter(
+    (n) => !n.targetUserId || n.targetUserId === currentUser.id
+  );
+
   return (
     <AppContext.Provider
       value={{
@@ -821,7 +847,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         products,
         sales,
         goals,
-        notifications,
+        notifications: visibleNotifications,
         auditLogs,
         settings,
         isLoadingData,
@@ -861,6 +887,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updateSettings,
         markNotificationRead,
         clearAllNotifications,
+        sendReminderNotification,
         importSalesData,
         playSaleSound,
         clearSampleData,

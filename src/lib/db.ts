@@ -195,6 +195,7 @@ export function rowToNotification(row: any): NotificationItem {
     message: row.message,
     read: row.read,
     createdAt: row.created_at,
+    targetUserId: row.target_user_id || undefined,
   };
 }
 
@@ -206,6 +207,7 @@ export function notificationToRow(n: Partial<NotificationItem>) {
   if (n.message !== undefined) row.message = n.message;
   if (n.read !== undefined) row.read = n.read;
   if (n.createdAt !== undefined) row.created_at = n.createdAt;
+  if (n.targetUserId !== undefined) row.target_user_id = n.targetUserId;
   return row;
 }
 

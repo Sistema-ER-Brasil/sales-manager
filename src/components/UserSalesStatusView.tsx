@@ -29,6 +29,7 @@ export const UserSalesStatusView: React.FC = () => {
     setActiveTab,
     currentUser,
     setHistoryUserFilter,
+    sendReminderNotification,
   } = useApp();
 
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
@@ -109,6 +110,7 @@ export const UserSalesStatusView: React.FC = () => {
   const totalLoggedVolume = userStatusData.reduce((acc: number, d: any) => acc + d.totalAmount, 0);
 
   const handleSendReminder = (userName: string, userId: string) => {
+    sendReminderNotification(userId, userName);
     setReminderSent((prev) => ({ ...prev, [userId]: true }));
     setTimeout(() => {
       setReminderSent((prev) => ({ ...prev, [userId]: false }));

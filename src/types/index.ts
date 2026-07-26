@@ -89,6 +89,7 @@ export interface NotificationItem {
   message: string;
   read: boolean;
   createdAt: string;
+  targetUserId?: string; // if set, only relevant to this user; otherwise broadcast to everyone
 }
 
 export interface AuditLog {
