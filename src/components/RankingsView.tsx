@@ -5,7 +5,7 @@ import { formatCurrency, formatNumber } from '../utils/formatters';
 import { Trophy, Flame, Layers, Building2, ShoppingBag } from 'lucide-react';
 
 export const RankingsView: React.FC = () => {
-  const { sales, marketplaces, companies, periodFilter, setPeriodFilter, dateRange } = useApp();
+  const { sales, marketplaces, companies, periodFilter, setPeriodFilter, dateRange, setDateRange } = useApp();
 
   const [rankBy, setRankBy] = useState<'product' | 'marketplace' | 'company'>('product');
 
@@ -35,15 +35,15 @@ export const RankingsView: React.FC = () => {
   return (
     <div className="p-4 sm:p-6 space-y-6">
       {/* Header Bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Trophy className="w-5 h-5 text-blue-800" />
-          <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide">
-            Rankings de Desempenho
-          </h2>
-        </div>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-blue-800" />
+            <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide">
+              Rankings de Desempenho
+            </h2>
+          </div>
 
-        <div className="flex items-center gap-3">
           <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
             <button
               onClick={() => setRankBy('product')}
@@ -70,17 +70,53 @@ export const RankingsView: React.FC = () => {
               CNPJs
             </button>
           </div>
+        </div>
 
-          <select
-            value={periodFilter}
-            onChange={(e) => setPeriodFilter(e.target.value as any)}
-            className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-          >
-            <option value="today">Hoje</option>
-            <option value="this_week">Esta Semana</option>
-            <option value="this_month">Este Mês</option>
-            <option value="this_year">Ano</option>
-          </select>
+        {/* Period Filter Chips */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+          {(
+            [
+              { id: 'today', label: 'Hoje' },
+              { id: 'yesterday', label: 'Ontem' },
+              { id: 'this_week', label: 'Esta Semana' },
+              { id: 'last_7_days', label: 'Últimos 7 dias' },
+              { id: 'last_30_days', label: 'Últimos 30 dias' },
+              { id: 'this_month', label: 'Este Mês' },
+              { id: 'this_year', label: 'Ano' },
+              { id: 'custom', label: 'Dia / Período Específico' },
+            ] as const
+          ).map((p) => (
+            <button
+              key={p.id}
+              onClick={() => setPeriodFilter(p.id)}
+              className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-all ${
+                periodFilter === p.id
+                  ? 'bg-blue-600 text-white shadow-2xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+
+          {/* Custom Date Range Picker (also covers a single specific day when both dates match) */}
+          {periodFilter === 'custom' && (
+            <div className="flex items-center gap-1.5 ml-auto">
+              <input
+                type="date"
+                value={dateRange.startDate}
+                onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+                className="px-2 py-0.5 text-[11px] rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+              />
+              <span className="text-[10px] text-slate-400">até</span>
+              <input
+                type="date"
+                value={dateRange.endDate}
+                onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+                className="px-2 py-0.5 text-[11px] rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+              />
+            </div>
+          )}
         </div>
       </div>
 
