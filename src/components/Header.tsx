@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { formatDateBR, formatDateTimeBR } from '../utils/formatters';
 import { ChangePasswordModal } from './ChangePasswordModal';
+import { getPermissions, ROLE_LABELS } from '../lib/permissions';
 
 interface HeaderProps {
   activeTab: string;
@@ -129,14 +130,14 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAu
               <div className="text-left hidden md:block">
                 <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
                   {currentUser.name}
-                  {currentUser.role === 'admin' && (
+                  {currentUser.role !== 'user' && (
                     <span className="bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 text-[10px] px-1.5 py-0.2 rounded font-medium">
-                      Admin
+                      {ROLE_LABELS[currentUser.role]}
                     </span>
                   )}
                 </div>
                 <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[120px]">
-                  {currentUser.role === 'admin' ? 'Acesso Total' : `${currentUser.assignedMarketplaces.length} Mktplaces`}
+                  {getPermissions(currentUser.role).registerSalesUnrestricted ? 'Acesso Total' : `${currentUser.assignedMarketplaces.length} Mktplaces`}
                 </div>
               </div>
               <ChevronDown className="w-4 h-4 text-slate-400" />

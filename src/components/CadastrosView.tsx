@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { Building2, Store, Plus, Trash2, Edit2, X, ShieldAlert, Camera, Loader2 } from 'lucide-react';
 import { uploadLogoImage, getLogoUrl } from '../lib/upload';
+import { getPermissions } from '../lib/permissions';
 
 export const CadastrosView: React.FC = () => {
   const { companies, marketplaces, addCompany, updateCompany, deleteCompany, addMarketplace, updateMarketplace, deleteMarketplace, currentUser, getAccessToken } = useApp();
-  const isAdmin = currentUser.role === 'admin';
+  const isAdmin = getPermissions(currentUser.role).manageCadastros;
 
   // Company Modal State
   const [compModal, setCompModal] = useState(false);

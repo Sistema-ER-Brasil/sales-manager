@@ -27,8 +27,8 @@ export async function requireAdmin(req: any): Promise<AdminAuthResult> {
     .select("role")
     .eq("id", userData.user.id)
     .single();
-  if (profileError || !profile || profile.role !== "admin") {
-    return { ok: false, userId: "", status: 403, error: "Apenas administradores podem executar esta ação." };
+  if (profileError || !profile || (profile.role !== "admin" && profile.role !== "diretor")) {
+    return { ok: false, userId: "", status: 403, error: "Apenas administradores ou diretores podem executar esta ação." };
   }
 
   return { ok: true, userId: userData.user.id, status: 200, error: "" };

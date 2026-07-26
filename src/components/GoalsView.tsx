@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { formatCurrency, formatNumber, getTodayString, formatDateBR } from '../utils/formatters';
 import { Goal } from '../types';
+import { getPermissions } from '../lib/permissions';
 import {
   Target,
   Plus,
@@ -34,7 +35,7 @@ import {
 
 export const GoalsView: React.FC = () => {
   const { goals, sales, marketplaces, companies, addGoal, updateGoal, deleteGoal, auditLogs, currentUser } = useApp();
-  const isAdmin = currentUser.role === 'admin';
+  const isAdmin = getPermissions(currentUser.role).manageGoals;
 
   const todayStr = getTodayString();
 

@@ -1,22 +1,33 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getTodayString, formatCurrency } from '../utils/formatters';
-import { PlusCircle, Save, CheckCircle2, ShoppingBag, Layers, AlertCircle, Plus, Trash2, Clock, Store, X } from 'lucide-react';
+import { PlusCircle, Save, CheckCircle2, ShoppingBag, Layers, AlertCircle, Plus, Trash2, Clock, Store, X, ShieldAlert } from 'lucide-react';
 import { SalesHistoryView } from './SalesHistoryView';
+import { getPermissions } from '../lib/permissions';
 
 export const SalesEntryForm: React.FC = () => {
   const { currentUser, marketplaces, companies, sales, addSale, addSalesBatch } = useApp();
 
-  const isAdmin = currentUser.role === 'admin';
+  const perms = getPermissions(currentUser.role);
+
+  if (!perms.registerSales) {
+    return (
+      <div className="p-8 text-center space-y-3">
+        <ShieldAlert className="w-12 h-12 text-blue-800 mx-auto" />
+        <h2 className="text-lg font-bold">Acesso Restrito</h2>
+        <p className="text-xs text-slate-500">Seu perfil não tem permissão para registrar vendas.</p>
+      </div>
+    );
+  }
 
   // Filter marketplaces permitted for user
   const availableMarketplaces = marketplaces.filter((m) =>
-    isAdmin ? true : currentUser.assignedMarketplaces.includes(m.id) || currentUser.assignedMarketplaces.includes(m.slug)
+    perms.registerSalesUnrestricted ? true : currentUser.assignedMarketplaces.includes(m.id) || currentUser.assignedMarketplaces.includes(m.slug)
   );
 
   // Filter companies (CNPJs) permitted for user
   const availableCompanies = companies.filter((c) =>
-    isAdmin ? true : currentUser.assignedCompanies.includes(c.id) || currentUser.assignedCompanies.includes(c.code)
+    perms.registerSalesUnrestricted ? true : currentUser.assignedCompanies.includes(c.id) || currentUser.assignedCompanies.includes(c.code)
   );
 
   // User's assigned marketplaces daily status check

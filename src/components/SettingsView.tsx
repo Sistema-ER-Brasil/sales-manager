@@ -5,11 +5,16 @@ import { uploadLogoImage } from '../lib/upload';
 import { ChangePasswordModal } from './ChangePasswordModal';
 import { UsersView } from './UsersView';
 import { AuditView } from './AuditView';
+import { getPermissions } from '../lib/permissions';
 
 export const SettingsView: React.FC = () => {
   const { settings, updateSettings, currentUser, updateUser, getAccessToken, logout } = useApp();
-  const isAdmin = currentUser.role === 'admin';
-  const [adminTab, setAdminTab] = useState<'general' | 'users' | 'audit'>('general');
+  const perms = getPermissions(currentUser.role);
+  const hasAnyAdminAccess = perms.technicalSettings || perms.manageUsers || perms.viewAudit;
+  const isAdmin = hasAnyAdminAccess;
+  const [adminTab, setAdminTab] = useState<'general' | 'users' | 'audit'>(
+    perms.technicalSettings ? 'general' : perms.manageUsers ? 'users' : 'audit'
+  );
 
   // Self-service profile state (non-admin view)
   const [profileName, setProfileName] = useState(currentUser.name);
@@ -151,37 +156,43 @@ export const SettingsView: React.FC = () => {
 
         {/* Admin sub-navigation: General / Users / Audit */}
         <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-fit">
-          <button
-            onClick={() => setAdminTab('general')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
-              adminTab === 'general' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'
-            }`}
-          >
-            <Settings className="w-3.5 h-3.5" /> Geral
-          </button>
-          <button
-            onClick={() => setAdminTab('users')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
-              adminTab === 'users' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'
-            }`}
-          >
-            <UsersIcon className="w-3.5 h-3.5" /> Usuários
-          </button>
-          <button
-            onClick={() => setAdminTab('audit')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
-              adminTab === 'audit' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5" /> Auditoria & Logs
-          </button>
+          {perms.technicalSettings && (
+            <button
+              onClick={() => setAdminTab('general')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+                adminTab === 'general' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'
+              }`}
+            >
+              <Settings className="w-3.5 h-3.5" /> Geral
+            </button>
+          )}
+          {perms.manageUsers && (
+            <button
+              onClick={() => setAdminTab('users')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+                adminTab === 'users' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'
+              }`}
+            >
+              <UsersIcon className="w-3.5 h-3.5" /> Usuários
+            </button>
+          )}
+          {perms.viewAudit && (
+            <button
+              onClick={() => setAdminTab('audit')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+                adminTab === 'audit' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" /> Auditoria & Logs
+            </button>
+          )}
         </div>
       </div>
 
-      {adminTab === 'users' && <UsersView />}
-      {adminTab === 'audit' && <AuditView />}
+      {adminTab === 'users' && perms.manageUsers && <UsersView />}
+      {adminTab === 'audit' && perms.viewAudit && <AuditView />}
 
-      {adminTab === 'general' && (
+      {adminTab === 'general' && perms.technicalSettings && (
       <div className="max-w-4xl mx-auto w-full space-y-6">
       {/* Sound Settings */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-6">

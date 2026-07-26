@@ -5,6 +5,7 @@ import { formatCurrency, formatDateBR, formatDateTimeBR } from '../utils/formatt
 import { exportSalesToPDF, exportToExcel, exportToCSV } from '../utils/exportUtils';
 import { SaleItem } from '../types';
 import { ConfirmDialog } from './ConfirmDialog';
+import { getPermissions } from '../lib/permissions';
 import {
   History,
   Search,
@@ -43,7 +44,8 @@ export const SalesHistoryView: React.FC = () => {
     approveSale,
   } = useApp();
 
-  const isAdmin = currentUser.role === 'admin';
+  const perms = getPermissions(currentUser.role);
+  const isAdmin = perms.approveSales; // can approve/delete/see everyone's sales
 
   const [searchTerm, setSearchTerm] = useState('');
   const [editingSale, setEditingSale] = useState<SaleItem | null>(null);

@@ -16,6 +16,7 @@ import {
   Boxes,
   LogOut,
 } from 'lucide-react';
+import { getPermissions, Permissions } from '../lib/permissions';
 
 interface SidebarProps {
   activeTab: string;
@@ -24,7 +25,8 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   const { currentUser, logout } = useApp();
-  const isAdmin = currentUser.role === 'admin';
+  const perms = getPermissions(currentUser.role);
+  const isAdmin = perms.registerSalesUnrestricted;
 
   const menuGroups = [
     {
@@ -38,9 +40,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
     {
       title: 'Gestão Operacional',
       items: [
-        { id: 'entry', label: 'Registrar Vendas', icon: PlusCircle },
+        { id: 'entry', label: 'Registrar Vendas', icon: PlusCircle, require: 'registerSales' as keyof Permissions },
         { id: 'reports', label: 'Relatórios & Matriz', icon: BarChart3 },
-        { id: 'status-lancamento', label: 'Status Lançamento', icon: UserCheck, badge: 'NOVO', badgeColor: 'bg-blue-500 text-white', adminOnly: true },
+        { id: 'status-lancamento', label: 'Status Lançamento', icon: UserCheck, badge: 'NOVO', badgeColor: 'bg-blue-500 text-white', require: 'viewTeamStatus' as keyof Permissions },
         { id: 'tasks', label: 'Tarefas', icon: ListChecks, badge: 'NOVO', badgeColor: 'bg-blue-500 text-white' },
       ],
     },
@@ -48,7 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
       title: 'Administração & Dados',
       items: [
         { id: 'import', label: 'Importação', icon: Upload },
-        { id: 'cadastros', label: 'Cadastros (CNPJs & Mkt)', icon: Building2, adminOnly: true },
+        { id: 'cadastros', label: 'Cadastros (CNPJs & Mkt)', icon: Building2, require: 'manageCadastros' as keyof Permissions },
       ],
     },
     {
@@ -98,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
             </div>
 
             {group.items.map((item) => {
-              if (item.adminOnly && !isAdmin) return null;
+              if (item.require && !perms[item.require]) return null;
               const Icon = item.icon;
               const isActive = activeTab === item.id;
 

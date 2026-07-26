@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { formatDateTimeBR } from '../utils/formatters';
 import { ShieldCheck, Search, ShieldAlert, Target, ShoppingBag, Users, Clock, Filter, Activity } from 'lucide-react';
+import { getPermissions } from '../lib/permissions';
 
 export const AuditView: React.FC = () => {
   const { auditLogs, currentUser } = useApp();
-  const isAdmin = currentUser.role === 'admin';
+  const isAdmin = getPermissions(currentUser.role).viewAudit;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEntity, setSelectedEntity] = useState<string>('all');

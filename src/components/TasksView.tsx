@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Task, TaskComment } from '../types';
+import { Task, TaskComment, User } from '../types';
 import { formatDateBR, formatDateTimeBR } from '../utils/formatters';
 import { supabase } from '../lib/supabaseClient';
 import { rowToTaskComment, taskCommentToRow } from '../lib/db';
+import { getPermissions } from '../lib/permissions';
 import { ConfirmDialog } from './ConfirmDialog';
 import {
   ListChecks,
@@ -21,6 +22,8 @@ import {
   User as UserIcon,
   Inbox,
   Send as SentIcon,
+  Eye,
+  UserPlus,
 } from 'lucide-react';
 
 const COLUMNS: { status: Task['status']; label: string }[] = [
@@ -47,30 +50,49 @@ const PRIORITY_LABEL: Record<Task['priority'], string> = {
   high: 'Alta',
 };
 
-type FilterTab = 'all' | 'assigned_to_me' | 'created_by_me';
+type FilterTab = 'all' | 'assigned_to_me' | 'created_by_me' | 'watching';
 type ViewMode = 'kanban' | 'list';
+
+interface Watcher {
+  userId: string;
+  userName: string;
+}
 
 export const TasksView: React.FC = () => {
   const { tasks, users, currentUser, addTask, updateTaskStatus, deleteTask } = useApp();
-  const isAdmin = currentUser.role === 'admin';
+  const perms = getPermissions(currentUser.role);
+  const canSeeAll = perms.viewTeamStatus;
+  const canDeleteAnyTask = currentUser.role === 'admin' || currentUser.role === 'diretor';
 
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
-  const [filterTab, setFilterTab] = useState<FilterTab>(isAdmin ? 'all' : 'assigned_to_me');
+  const [filterTab, setFilterTab] = useState<FilterTab>(canSeeAll ? 'all' : 'assigned_to_me');
+  const [watchedTaskIds, setWatchedTaskIds] = useState<Set<string>>(new Set());
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [assignedTo, setAssignedTo] = useState(users[0]?.id || '');
+  const [watcherIds, setWatcherIds] = useState<string[]>([]);
   const [priority, setPriority] = useState<Task['priority']>('medium');
   const [dueDate, setDueDate] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<Task | null>(null);
   const [dragOverStatus, setDragOverStatus] = useState<Task['status'] | null>(null);
   const [detailTask, setDetailTask] = useState<Task | null>(null);
 
-  const baseTasks = isAdmin ? tasks : tasks.filter((t) => t.assignedTo === currentUser.id || t.createdBy === currentUser.id);
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from('task_watchers').select('task_id').eq('user_id', currentUser.id);
+      if (data) setWatchedTaskIds(new Set(data.map((r: any) => r.task_id)));
+    })();
+  }, [currentUser.id]);
+
+  const baseTasks = canSeeAll
+    ? tasks
+    : tasks.filter((t) => t.assignedTo === currentUser.id || t.createdBy === currentUser.id || watchedTaskIds.has(t.id));
   const visibleTasks = baseTasks.filter((t) => {
     if (filterTab === 'assigned_to_me') return t.assignedTo === currentUser.id;
     if (filterTab === 'created_by_me') return t.createdBy === currentUser.id;
+    if (filterTab === 'watching') return watchedTaskIds.has(t.id);
     return true;
   });
 
@@ -78,16 +100,17 @@ export const TasksView: React.FC = () => {
     setTitle('');
     setDescription('');
     setAssignedTo(users[0]?.id || '');
+    setWatcherIds([]);
     setPriority('medium');
     setDueDate('');
     setShowCreateModal(true);
   };
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !assignedTo) return;
     const assignedUser = users.find((u) => u.id === assignedTo);
-    addTask({
+    const newTask = await addTask({
       title: title.trim(),
       description: description.trim() || undefined,
       assignedTo,
@@ -95,6 +118,18 @@ export const TasksView: React.FC = () => {
       priority,
       dueDate: dueDate || undefined,
     });
+
+    if (watcherIds.length > 0) {
+      const rows = watcherIds
+        .filter((id) => id !== assignedTo)
+        .map((id) => ({
+          task_id: newTask.id,
+          user_id: id,
+          user_name: users.find((u) => u.id === id)?.name || 'Usuário',
+        }));
+      if (rows.length > 0) await supabase.from('task_watchers').insert(rows);
+    }
+
     setShowCreateModal(false);
   };
 
@@ -104,10 +139,13 @@ export const TasksView: React.FC = () => {
     updateTaskStatus(taskId, status);
   };
 
+  const canDeleteTask = (task: Task) => canDeleteAnyTask || task.createdBy === currentUser.id;
+
   const filterTabs: { id: FilterTab; label: string; icon: React.ElementType }[] = [
-    ...(isAdmin ? [{ id: 'all' as FilterTab, label: 'Todas', icon: ListChecks }] : []),
+    ...(canSeeAll ? [{ id: 'all' as FilterTab, label: 'Todas', icon: ListChecks }] : []),
     { id: 'assigned_to_me', label: 'Designadas a Mim', icon: Inbox },
     { id: 'created_by_me', label: 'Criadas por Mim', icon: SentIcon },
+    { id: 'watching', label: 'Acompanhando', icon: Eye },
   ];
 
   return (
@@ -140,14 +178,12 @@ export const TasksView: React.FC = () => {
             </button>
           </div>
 
-          {isAdmin && (
-            <button
-              onClick={openCreate}
-              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-xs transition-colors"
-            >
-              <Plus className="w-4 h-4" /> Nova Tarefa
-            </button>
-          )}
+          <button
+            onClick={openCreate}
+            className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-xs transition-colors"
+          >
+            <Plus className="w-4 h-4" /> Nova Tarefa
+          </button>
         </div>
       </div>
 
@@ -215,7 +251,7 @@ export const TasksView: React.FC = () => {
                     >
                       <div className="flex items-start justify-between gap-2">
                         <h4 className="font-bold text-xs text-slate-900 dark:text-slate-100 leading-snug">{task.title}</h4>
-                        {isAdmin && (
+                        {canDeleteTask(task) && (
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -326,7 +362,7 @@ export const TasksView: React.FC = () => {
                         </span>
                       </td>
                       <td className="p-3 text-center">
-                        {isAdmin && (
+                        {canDeleteTask(task) && (
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -350,8 +386,8 @@ export const TasksView: React.FC = () => {
 
       {/* CREATE TASK MODAL */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl my-8">
             <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
                 <ListChecks className="w-4 h-4 text-blue-600" /> Nova Tarefa
@@ -423,6 +459,33 @@ export const TasksView: React.FC = () => {
                 />
               </div>
 
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
+                  <Eye className="w-3.5 h-3.5" /> Acompanhantes (Opcional)
+                </label>
+                <div className="grid grid-cols-2 gap-1.5 max-h-32 overflow-y-auto p-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                  {users.filter((u) => u.id !== assignedTo).map((u) => {
+                    const isSel = watcherIds.includes(u.id);
+                    return (
+                      <button
+                        key={u.id}
+                        type="button"
+                        onClick={() =>
+                          setWatcherIds((prev) => (isSel ? prev.filter((id) => id !== u.id) : [...prev, u.id]))
+                        }
+                        className={`px-2 py-1 rounded-lg border text-left truncate transition-colors ${
+                          isSel
+                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 font-bold'
+                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                        }`}
+                      >
+                        {u.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="flex justify-end gap-2 pt-3">
                 <button
                   type="button"
@@ -443,12 +506,13 @@ export const TasksView: React.FC = () => {
         </div>
       )}
 
-      {/* TASK DETAIL MODAL (with notes/comments) */}
+      {/* TASK DETAIL MODAL (with watchers + notes/comments) */}
       {detailTask && (
         <TaskDetailModal
           task={detailTask}
+          users={users}
           onClose={() => setDetailTask(null)}
-          isAdmin={isAdmin}
+          canDelete={canDeleteTask(detailTask)}
           onDelete={() => {
             setDeleteTarget(detailTask);
             setDetailTask(null);
@@ -474,15 +538,28 @@ export const TasksView: React.FC = () => {
 
 const TaskDetailModal: React.FC<{
   task: Task;
+  users: User[];
   onClose: () => void;
-  isAdmin: boolean;
+  canDelete: boolean;
   onDelete: () => void;
-}> = ({ task, onClose, isAdmin, onDelete }) => {
+}> = ({ task, users, onClose, canDelete, onDelete }) => {
   const { currentUser, updateTaskStatus } = useApp();
   const [comments, setComments] = useState<TaskComment[]>([]);
   const [loadingComments, setLoadingComments] = useState(true);
   const [newComment, setNewComment] = useState('');
   const [posting, setPosting] = useState(false);
+  const [watchers, setWatchers] = useState<Watcher[]>([]);
+  const [showAddWatcher, setShowAddWatcher] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState<{ active: boolean; term: string; start: number }>({
+    active: false,
+    term: '',
+    start: 0,
+  });
+
+  const loadWatchers = async () => {
+    const { data } = await supabase.from('task_watchers').select('user_id, user_name').eq('task_id', task.id);
+    if (data) setWatchers(data.map((r: any) => ({ userId: r.user_id, userName: r.user_name })));
+  };
 
   useEffect(() => {
     let active = true;
@@ -498,10 +575,40 @@ const TaskDetailModal: React.FC<{
         setLoadingComments(false);
       }
     })();
+    loadWatchers();
     return () => {
       active = false;
     };
   }, [task.id]);
+
+  const addWatcher = async (userId: string) => {
+    const user = users.find((u) => u.id === userId);
+    if (!user) return;
+    await supabase.from('task_watchers').insert({ task_id: task.id, user_id: userId, user_name: user.name });
+    await loadWatchers();
+    setShowAddWatcher(false);
+  };
+
+  const removeWatcher = async (userId: string) => {
+    await supabase.from('task_watchers').delete().eq('task_id', task.id).eq('user_id', userId);
+    setWatchers((prev) => prev.filter((w) => w.userId !== userId));
+  };
+
+  // Detect "@Name" mentions in the comment text and notify each mentioned user.
+  const notifyMentions = async (commentText: string) => {
+    const mentioned = users.filter((u) => u.id !== currentUser.id && commentText.includes(`@${u.name}`));
+    if (mentioned.length === 0) return;
+    const rows = mentioned.map((u) => ({
+      id: `notif_${Date.now()}_${u.id}`,
+      type: 'system',
+      title: 'Você foi mencionado em uma tarefa',
+      message: `${currentUser.name} mencionou você na tarefa "${task.title}".`,
+      read: false,
+      created_at: new Date().toISOString(),
+      target_user_id: u.id,
+    }));
+    await supabase.from('notifications').insert(rows);
+  };
 
   const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -516,12 +623,43 @@ const TaskDetailModal: React.FC<{
       createdAt: new Date().toISOString(),
     };
     const { error } = await supabase.from('task_comments').insert(taskCommentToRow(comment));
-    setPosting(false);
     if (!error) {
       setComments((prev) => [...prev, comment]);
+      await notifyMentions(comment.comment);
       setNewComment('');
     }
+    setPosting(false);
   };
+
+  const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewComment(value);
+    const cursor = e.target.selectionStart || value.length;
+    const uptoCursor = value.slice(0, cursor);
+    // Names in this app can contain spaces (e.g. "Teste Gerente"), so allow
+    // spaces within the mention query — just cap its length.
+    const match = uptoCursor.match(/@([^@]{0,30})$/);
+    if (match) {
+      setMentionQuery({ active: true, term: match[1].toLowerCase(), start: cursor - match[0].length });
+    } else {
+      setMentionQuery({ active: false, term: '', start: 0 });
+    }
+  };
+
+  const applyMention = (userName: string) => {
+    const before = newComment.slice(0, mentionQuery.start);
+    const after = newComment.slice(mentionQuery.start + mentionQuery.term.length + 1);
+    setNewComment(`${before}@${userName} ${after}`);
+    setMentionQuery({ active: false, term: '', start: 0 });
+  };
+
+  const mentionCandidates = mentionQuery.active
+    ? users.filter((u) => u.name.toLowerCase().includes(mentionQuery.term)).slice(0, 5)
+    : [];
+
+  const nonWatcherUsers = users.filter(
+    (u) => u.id !== task.assignedTo && !watchers.some((w) => w.userId === u.id)
+  );
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
@@ -577,7 +715,56 @@ const TaskDetailModal: React.FC<{
             ))}
           </div>
 
-          {isAdmin && (
+          {/* Watchers section */}
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+            <div className="flex items-center justify-between">
+              <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5" /> Acompanhando ({watchers.length})
+              </h4>
+              <button
+                onClick={() => setShowAddWatcher((v) => !v)}
+                className="text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1"
+              >
+                <UserPlus className="w-3.5 h-3.5" /> Adicionar
+              </button>
+            </div>
+
+            {showAddWatcher && (
+              <div className="flex flex-wrap gap-1.5 p-2 bg-slate-50 dark:bg-slate-800/60 rounded-xl">
+                {nonWatcherUsers.length === 0 ? (
+                  <span className="text-[11px] text-slate-400">Todos já estão acompanhando.</span>
+                ) : (
+                  nonWatcherUsers.map((u) => (
+                    <button
+                      key={u.id}
+                      onClick={() => addWatcher(u.id)}
+                      className="text-[11px] font-semibold px-2 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-blue-400"
+                    >
+                      + {u.name}
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
+
+            {watchers.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {watchers.map((w) => (
+                  <span
+                    key={w.userId}
+                    className="text-[11px] font-semibold px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 flex items-center gap-1"
+                  >
+                    {w.userName}
+                    <button onClick={() => removeWatcher(w.userId)} className="hover:text-blue-950 dark:hover:text-white">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {canDelete && (
             <button
               onClick={onDelete}
               className="text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1"
@@ -612,21 +799,37 @@ const TaskDetailModal: React.FC<{
           </div>
         </div>
 
-        <form onSubmit={handlePostComment} className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 shrink-0">
-          <input
-            type="text"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Adicionar uma anotação..."
-            className="flex-1 p-2 text-xs border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
-          />
-          <button
-            type="submit"
-            disabled={posting || !newComment.trim()}
-            className="p-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl shrink-0"
-          >
-            <Send className="w-4 h-4" />
-          </button>
+        <form onSubmit={handlePostComment} className="p-4 border-t border-slate-100 dark:border-slate-800 shrink-0 relative">
+          {mentionQuery.active && mentionCandidates.length > 0 && (
+            <div className="absolute bottom-full left-4 right-4 mb-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden">
+              {mentionCandidates.map((u) => (
+                <button
+                  key={u.id}
+                  type="button"
+                  onClick={() => applyMention(u.name)}
+                  className="w-full text-left px-3 py-2 text-xs font-semibold hover:bg-blue-50 dark:hover:bg-blue-950/50 text-slate-700 dark:text-slate-200"
+                >
+                  @{u.name}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={newComment}
+              onChange={handleCommentChange}
+              placeholder="Adicionar uma anotação... use @ para mencionar"
+              className="flex-1 p-2 text-xs border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+            />
+            <button
+              type="submit"
+              disabled={posting || !newComment.trim()}
+              className="p-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl shrink-0"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
         </form>
       </div>
     </div>

@@ -109,7 +109,7 @@ interface AppContextType {
   updateGoal: (goal: Goal) => void;
   deleteGoal: (id: string) => void;
 
-  addTask: (task: Omit<Task, 'id' | 'createdAt' | 'createdBy' | 'createdByName' | 'status'>) => void;
+  addTask: (task: Omit<Task, 'id' | 'createdAt' | 'createdBy' | 'createdByName' | 'status'>) => Promise<Task>;
   updateTaskStatus: (id: string, status: Task['status']) => void;
   deleteTask: (id: string) => void;
 
@@ -660,7 +660,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     })();
   };
 
-  const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'createdBy' | 'createdByName' | 'status'>) => {
+  const addTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'createdBy' | 'createdByName' | 'status'>): Promise<Task> => {
     const newTask: Task = {
       ...taskData,
       id: `task_${Date.now()}`,
@@ -683,11 +683,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
     setNotifications((prev) => [newNotif, ...prev]);
 
-    (async () => {
-      const { error } = await supabase.from('tasks').insert(taskToRow(newTask));
-      if (error) console.error('Erro ao criar tarefa:', error.message);
-      await supabase.from('notifications').insert(notificationToRow(newNotif));
-    })();
+    const { error } = await supabase.from('tasks').insert(taskToRow(newTask));
+    if (error) console.error('Erro ao criar tarefa:', error.message);
+    await supabase.from('notifications').insert(notificationToRow(newNotif));
+
+    return newTask;
   };
 
   const updateTaskStatus = (id: string, status: Task['status']) => {

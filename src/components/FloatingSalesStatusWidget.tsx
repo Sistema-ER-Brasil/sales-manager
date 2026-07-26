@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getTodayString, formatCurrency } from '../utils/formatters';
 import { AlertTriangle, CheckCircle2, ChevronUp, Store, PlusCircle, ArrowRight, UserCheck } from 'lucide-react';
+import { getPermissions } from '../lib/permissions';
 
 export const FloatingSalesStatusWidget: React.FC = () => {
   const { currentUser, sales, marketplaces, users, setActiveTab, activeTab } = useApp();
@@ -10,7 +11,7 @@ export const FloatingSalesStatusWidget: React.FC = () => {
   if (activeTab === 'operations') return null;
 
   const todayStr = getTodayString();
-  const isAdmin = currentUser.role === 'admin';
+  const isAdmin = getPermissions(currentUser.role).viewTeamStatus;
 
   if (!isAdmin) {
     const userTodaySales = sales.filter((s) => {

@@ -20,6 +20,8 @@ import {
   BellRing
 } from 'lucide-react';
 import { formatCurrency, formatNumber, getTodayString } from '../utils/formatters';
+import { getPermissions, ROLE_LABELS } from '../lib/permissions';
+import { UserRole } from '../types';
 
 export const UserSalesStatusView: React.FC = () => {
   const {
@@ -31,6 +33,8 @@ export const UserSalesStatusView: React.FC = () => {
     setHistoryUserFilter,
     sendReminderNotification,
   } = useApp();
+
+  const canViewTeamStatus = getPermissions(currentUser.role).viewTeamStatus;
 
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
   const [filterStatus, setFilterStatus] = useState<'ALL' | 'DONE' | 'PENDING'>('ALL');
@@ -117,8 +121,8 @@ export const UserSalesStatusView: React.FC = () => {
     }, 4000);
   };
 
-  // If current user is not admin, show their personal daily filling status page
-  if (currentUser.role !== 'admin') {
+  // If the user can't view the team-wide board, show their personal daily filling status page
+  if (!canViewTeamStatus) {
     const userSales = getUserSalesForDate(currentUser.id, selectedDate);
     const hasLogged = userSales.length > 0;
     const totalAmount = userSales.reduce((acc: number, s: any) => acc + (s.totalValue || 0), 0);
@@ -416,14 +420,8 @@ export const UserSalesStatusView: React.FC = () => {
                   <div>
                     <div className="flex items-center gap-1.5">
                       <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">{u.name}</h3>
-                      <span
-                        className={`text-[9px] font-black px-1.5 py-0.2 rounded uppercase ${
-                          u.role === 'admin'
-                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
-                            : 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
-                        }`}
-                      >
-                        {u.role === 'admin' ? 'Admin' : 'Vendedor'}
+                      <span className="text-[9px] font-black px-1.5 py-0.2 rounded uppercase bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                        {ROLE_LABELS[u.role as UserRole]}
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 truncate max-w-[200px]">{u.email}</p>
@@ -452,7 +450,7 @@ export const UserSalesStatusView: React.FC = () => {
                   <Store className="w-3 h-3 text-blue-500" /> Canais Sob Responsabilidade:
                 </span>
                 <div className="flex flex-wrap gap-1">
-                  {u.role === 'admin' ? (
+                  {getPermissions(u.role as UserRole).registerSalesUnrestricted ? (
                     <span className="text-[11px] text-slate-600 dark:text-slate-300 font-semibold italic">
                       Todos os canais liberados
                     </span>

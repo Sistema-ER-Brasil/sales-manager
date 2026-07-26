@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { User } from '../types';
+import { User, UserRole } from '../types';
 import { Users, Plus, Edit2, Trash2, ShieldAlert, Check, X, Store, Building2, KeyRound, AlertCircle, Camera, Loader2 } from 'lucide-react';
 import { ChangePasswordModal } from './ChangePasswordModal';
 import { ConfirmDialog } from './ConfirmDialog';
 import { uploadLogoImage } from '../lib/upload';
+import { getPermissions, ROLE_LABELS } from '../lib/permissions';
 
 export const UsersView: React.FC = () => {
   const { users, marketplaces, companies, addUser, updateUser, deleteUser, currentUser, getAccessToken } = useApp();
-  const isAdmin = currentUser.role === 'admin';
+  const isAdmin = getPermissions(currentUser.role).manageUsers;
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -16,7 +17,7 @@ export const UsersView: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'admin' | 'user'>('user');
+  const [role, setRole] = useState<UserRole>('user');
   const [assignedMarketplaces, setAssignedMarketplaces] = useState<string[]>([]);
   const [assignedCompanies, setAssignedCompanies] = useState<string[]>([]);
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -180,14 +181,8 @@ export const UsersView: React.FC = () => {
         {users.map((u) => (
           <div key={u.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <span
-                className={`text-[10px] font-extrabold px-2 py-0.5 rounded uppercase ${
-                  u.role === 'admin'
-                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
-                    : 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
-                }`}
-              >
-                {u.role.toUpperCase()}
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded uppercase bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                {ROLE_LABELS[u.role]}
               </span>
 
               <div className="flex items-center gap-1">
@@ -238,7 +233,7 @@ export const UsersView: React.FC = () => {
               </span>
 
               <div className="flex flex-wrap gap-1">
-                {u.role === 'admin' ? (
+                {getPermissions(u.role).registerSalesUnrestricted ? (
                   <span className="text-xs text-blue-600 dark:text-blue-400 font-bold">Todos os Canais (Acesso Total)</span>
                 ) : (
                   u.assignedMarketplaces.map((mId) => {
@@ -259,7 +254,7 @@ export const UsersView: React.FC = () => {
               </span>
 
               <div className="flex flex-wrap gap-1">
-                {u.role === 'admin' ? (
+                {getPermissions(u.role).registerSalesUnrestricted ? (
                   <span className="text-xs text-blue-600 dark:text-blue-400 font-bold">Todos os CNPJs (Acesso Total)</span>
                 ) : (u.assignedCompanies || []).length === 0 ? (
                   <span className="text-xs text-slate-400 font-medium">Nenhum CNPJ atribuído</span>
@@ -363,15 +358,18 @@ export const UsersView: React.FC = () => {
                 <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nível de Acesso (Função) *</label>
                 <select
                   value={role}
-                  onChange={(e) => setRole(e.target.value as any)}
+                  onChange={(e) => setRole(e.target.value as UserRole)}
                   className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-bold"
                 >
                   <option value="user">Usuário Operacional (Acesso Limitado)</option>
+                  <option value="analista">Analista (Leitura de Relatórios & Auditoria)</option>
+                  <option value="gerente">Gerente (Aprova Vendas & Metas)</option>
+                  <option value="diretor">Diretor (Acesso Total, exceto config. técnicas)</option>
                   <option value="admin">Administrador (Acesso Total)</option>
                 </select>
               </div>
 
-              {role === 'user' && (
+              {!getPermissions(role).registerSalesUnrestricted && (
                 <div>
                   <label className="block font-bold text-slate-700 dark:text-slate-300 mb-2">Selecione os Marketplaces Autorizados:</label>
                   <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50">
@@ -397,7 +395,7 @@ export const UsersView: React.FC = () => {
                 </div>
               )}
 
-              {role === 'user' && (
+              {!getPermissions(role).registerSalesUnrestricted && (
                 <div>
                   <label className="block font-bold text-slate-700 dark:text-slate-300 mb-2">Selecione os CNPJs Sob Responsabilidade:</label>
                   <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50">
