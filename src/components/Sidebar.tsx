@@ -9,6 +9,7 @@ import {
   BarChart3,
   Trophy,
   Upload,
+  ListChecks,
   Settings,
   UserCheck,
   Store,
@@ -40,6 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
         { id: 'entry', label: 'Registrar Vendas', icon: PlusCircle },
         { id: 'reports', label: 'Relatórios & Matriz', icon: BarChart3 },
         { id: 'status-lancamento', label: 'Status Lançamento', icon: UserCheck, badge: 'NOVO', badgeColor: 'bg-blue-500 text-white', adminOnly: true },
+        { id: 'tasks', label: 'Tarefas', icon: ListChecks, badge: 'NOVO', badgeColor: 'bg-blue-500 text-white' },
       ],
     },
     {

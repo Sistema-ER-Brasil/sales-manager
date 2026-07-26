@@ -11,6 +11,7 @@ import { ReportsView } from './components/ReportsView';
 import { RankingsView } from './components/RankingsView';
 import { ImportView } from './components/ImportView';
 import { UserSalesStatusView } from './components/UserSalesStatusView';
+import { TasksView } from './components/TasksView';
 import { SettingsView } from './components/SettingsView';
 import { FloatingSalesStatusWidget } from './components/FloatingSalesStatusWidget';
 import { AuthModal } from './components/AuthModal';
@@ -57,6 +58,7 @@ function MainApp() {
           {activeTab === 'cadastros' && <CadastrosView />}
           {activeTab === 'goals' && <GoalsView />}
           {activeTab === 'status-lancamento' && <UserSalesStatusView />}
+          {activeTab === 'tasks' && <TasksView />}
           {activeTab === 'reports' && <ReportsView />}
           {activeTab === 'rankings' && <RankingsView />}
           {activeTab === 'import' && <ImportView />}

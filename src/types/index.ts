@@ -97,10 +97,24 @@ export interface AuditLog {
   userId: string;
   userName: string;
   action: 'CREATE' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'IMPORT';
-  entity: 'sales' | 'products' | 'users' | 'marketplaces' | 'companies' | 'goals';
+  entity: 'sales' | 'products' | 'users' | 'marketplaces' | 'companies' | 'goals' | 'tasks';
   details: string;
   ip: string;
   timestamp: string;
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  assignedTo: string; // user id
+  assignedToName: string;
+  createdBy: string; // user id
+  createdByName: string;
+  status: 'pending' | 'in_progress' | 'done';
+  priority: 'low' | 'medium' | 'high';
+  dueDate?: string; // YYYY-MM-DD
+  createdAt: string;
 }
 
 export interface SystemSettings {

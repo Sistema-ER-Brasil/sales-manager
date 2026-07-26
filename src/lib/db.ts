@@ -8,6 +8,7 @@ import {
   NotificationItem,
   AuditLog,
   SystemSettings,
+  Task,
 } from '../types';
 
 // ---- Supabase row shapes (snake_case) <-> app types (camelCase) ----
@@ -254,5 +255,37 @@ export function settingsToRow(s: Partial<SystemSettings>) {
   if (s.logoUrl !== undefined) row.logo_url = s.logoUrl;
   if (s.autoRefreshSecs !== undefined) row.auto_refresh_secs = s.autoRefreshSecs;
   if (s.soundEffectsEnabled !== undefined) row.sound_effects_enabled = s.soundEffectsEnabled;
+  return row;
+}
+
+export function rowToTask(row: any): Task {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description || undefined,
+    assignedTo: row.assigned_to,
+    assignedToName: row.assigned_to_name,
+    createdBy: row.created_by,
+    createdByName: row.created_by_name,
+    status: row.status,
+    priority: row.priority,
+    dueDate: row.due_date || undefined,
+    createdAt: row.created_at,
+  };
+}
+
+export function taskToRow(t: Partial<Task>) {
+  const row: any = {};
+  if (t.id !== undefined) row.id = t.id;
+  if (t.title !== undefined) row.title = t.title;
+  if (t.description !== undefined) row.description = t.description;
+  if (t.assignedTo !== undefined) row.assigned_to = t.assignedTo;
+  if (t.assignedToName !== undefined) row.assigned_to_name = t.assignedToName;
+  if (t.createdBy !== undefined) row.created_by = t.createdBy;
+  if (t.createdByName !== undefined) row.created_by_name = t.createdByName;
+  if (t.status !== undefined) row.status = t.status;
+  if (t.priority !== undefined) row.priority = t.priority;
+  if (t.dueDate !== undefined) row.due_date = t.dueDate;
+  if (t.createdAt !== undefined) row.created_at = t.createdAt;
   return row;
 }

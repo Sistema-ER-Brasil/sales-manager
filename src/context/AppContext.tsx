@@ -11,6 +11,7 @@ import {
   SystemSettings,
   PeriodFilter,
   DateRange,
+  Task,
 } from '../types';
 import {
   initialProducts,
@@ -38,6 +39,8 @@ import {
   auditLogToRow,
   rowToSettings,
   settingsToRow,
+  rowToTask,
+  taskToRow,
 } from '../lib/db';
 
 type ActionResult = { success: boolean; message?: string };
@@ -60,6 +63,7 @@ interface AppContextType {
   products: Product[];
   sales: SaleItem[];
   goals: Goal[];
+  tasks: Task[];
   notifications: NotificationItem[];
   auditLogs: AuditLog[];
   settings: SystemSettings;
@@ -105,6 +109,10 @@ interface AppContextType {
   updateGoal: (goal: Goal) => void;
   deleteGoal: (id: string) => void;
 
+  addTask: (task: Omit<Task, 'id' | 'createdAt' | 'createdBy' | 'createdByName' | 'status'>) => void;
+  updateTaskStatus: (id: string, status: Task['status']) => void;
+  deleteTask: (id: string) => void;
+
   addUser: (user: Omit<User, 'id'> & { password: string }) => Promise<ActionResult>;
   updateUser: (user: User & { password?: string }) => Promise<ActionResult>;
   deleteUser: (id: string) => Promise<ActionResult>;
@@ -141,6 +149,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [products, setProducts] = useState<Product[]>([]);
   const [sales, setSales] = useState<SaleItem[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [settings, setSettings] = useState<SystemSettings>(initialSettings);
@@ -178,7 +187,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const loadAllData = async () => {
     setIsLoadingData(true);
-    const [companiesRes, marketplacesRes, productsRes, salesRes, goalsRes, notifRes, auditRes, settingsRes, profilesRes] =
+    const [companiesRes, marketplacesRes, productsRes, salesRes, goalsRes, notifRes, auditRes, settingsRes, profilesRes, tasksRes] =
       await Promise.all([
         supabase.from('companies').select('*').order('code'),
         supabase.from('marketplaces').select('*').order('name'),
@@ -189,6 +198,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         supabase.from('audit_logs').select('*').order('timestamp', { ascending: false }).limit(300),
         supabase.from('settings').select('*').eq('id', true).single(),
         supabase.from('profiles').select('*').order('name'),
+        supabase.from('tasks').select('*').order('created_at', { ascending: false }),
       ]);
 
     if (companiesRes.data) setCompanies(companiesRes.data.map(rowToCompany));
@@ -200,6 +210,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (auditRes.data) setAuditLogs(auditRes.data.map(rowToAuditLog));
     if (settingsRes.data) setSettings(rowToSettings(settingsRes.data));
     if (profilesRes.data) setUsers(profilesRes.data.map(rowToUser));
+    if (tasksRes.data) setTasks(tasksRes.data.map(rowToTask));
 
     setIsLoadingData(false);
   };
@@ -301,6 +312,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           setNotifications((prev) => prev.map((n) => (n.id === row.id ? row : n)));
         } else if (payload.eventType === 'DELETE') {
           setNotifications((prev) => prev.filter((n) => n.id !== payload.old.id));
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          const row = rowToTask(payload.new);
+          setTasks((prev) => (prev.some((t) => t.id === row.id) ? prev : [row, ...prev]));
+        } else if (payload.eventType === 'UPDATE') {
+          const row = rowToTask(payload.new);
+          setTasks((prev) => prev.map((t) => (t.id === row.id ? row : t)));
+        } else if (payload.eventType === 'DELETE') {
+          setTasks((prev) => prev.filter((t) => t.id !== payload.old.id));
         }
       })
       .subscribe();
@@ -638,6 +660,56 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     })();
   };
 
+  const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'createdBy' | 'createdByName' | 'status'>) => {
+    const newTask: Task = {
+      ...taskData,
+      id: `task_${Date.now()}`,
+      createdBy: currentUser.id,
+      createdByName: currentUser.name,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+    };
+    setTasks((prev) => [newTask, ...prev]);
+    addAuditLog('CREATE', 'tasks', `Tarefa "${taskData.title}" atribuída a ${taskData.assignedToName}`);
+
+    const newNotif: NotificationItem = {
+      id: `notif_${Date.now()}`,
+      type: 'system',
+      title: 'Nova Tarefa Atribuída',
+      message: `${currentUser.name} atribuiu a tarefa "${taskData.title}" para você.`,
+      read: false,
+      createdAt: new Date().toISOString(),
+      targetUserId: taskData.assignedTo,
+    };
+    setNotifications((prev) => [newNotif, ...prev]);
+
+    (async () => {
+      const { error } = await supabase.from('tasks').insert(taskToRow(newTask));
+      if (error) console.error('Erro ao criar tarefa:', error.message);
+      await supabase.from('notifications').insert(notificationToRow(newNotif));
+    })();
+  };
+
+  const updateTaskStatus = (id: string, status: Task['status']) => {
+    const target = tasks.find((t) => t.id === id);
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
+    addAuditLog('UPDATE', 'tasks', `Tarefa "${target?.title || id}" movida para status "${status}"`);
+    (async () => {
+      const { error } = await supabase.from('tasks').update({ status }).eq('id', id);
+      if (error) console.error('Erro ao atualizar tarefa:', error.message);
+    })();
+  };
+
+  const deleteTask = (id: string) => {
+    const target = tasks.find((t) => t.id === id);
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+    addAuditLog('DELETE', 'tasks', `Tarefa "${target?.title || id}" removida`);
+    (async () => {
+      const { error } = await supabase.from('tasks').delete().eq('id', id);
+      if (error) console.error('Erro ao excluir tarefa:', error.message);
+    })();
+  };
+
   const addUser = async (u: Omit<User, 'id'> & { password: string }): Promise<ActionResult> => {
     try {
       const token = await getAccessToken();
@@ -847,6 +919,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         products,
         sales,
         goals,
+        tasks,
         notifications: visibleNotifications,
         auditLogs,
         settings,
@@ -881,6 +954,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addGoal,
         updateGoal,
         deleteGoal,
+        addTask,
+        updateTaskStatus,
+        deleteTask,
         addUser,
         updateUser,
         deleteUser,
