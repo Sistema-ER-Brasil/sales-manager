@@ -28,10 +28,8 @@ export default async function handler(req: any, res: any) {
     .update({
       name,
       role: role || "user",
-      assigned_marketplaces: [
-        ...(assignedMarketplaces || []),
-        ...(assignedCompanies || []).map((c: string) => `cnpj:${c}`),
-      ],
+      assigned_marketplaces: assignedMarketplaces || [],
+      assigned_companies: assignedCompanies || [],
     })
     .eq("id", data.user.id);
   if (profileError) {

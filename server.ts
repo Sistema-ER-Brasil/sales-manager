@@ -129,10 +129,8 @@ app.post("/api/admin/users", async (req, res) => {
     .update({
       name,
       role: role || "user",
-      assigned_marketplaces: [
-        ...(assignedMarketplaces || []),
-        ...(assignedCompanies || []).map((c: string) => `cnpj:${c}`),
-      ],
+      assigned_marketplaces: assignedMarketplaces || [],
+      assigned_companies: assignedCompanies || [],
     })
     .eq("id", data.user.id);
   if (profileError) {

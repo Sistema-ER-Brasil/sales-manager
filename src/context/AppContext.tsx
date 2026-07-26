@@ -22,7 +22,6 @@ import { getTodayString } from '../utils/formatters';
 import { supabase } from '../lib/supabaseClient';
 import {
   rowToUser,
-  packAssignments,
   rowToCompany,
   companyToRow,
   rowToMarketplace,
@@ -641,7 +640,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         .update({
           name: profile.name,
           role: profile.role,
-          assigned_marketplaces: packAssignments(profile.assignedMarketplaces, profile.assignedCompanies),
+          assigned_marketplaces: profile.assignedMarketplaces,
+          assigned_companies: profile.assignedCompanies,
           avatar: profile.avatar || null,
           status: profile.status,
         })
