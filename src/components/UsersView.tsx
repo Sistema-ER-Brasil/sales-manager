@@ -235,8 +235,8 @@ export const UsersView: React.FC = () => {
       {/* USER CREATE / EDIT MODAL */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-lg w-full space-y-4 text-xs font-sans shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-lg w-full space-y-4 text-xs font-sans shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3 sticky -top-6 -mt-6 pt-6 -mx-6 px-6 bg-white dark:bg-slate-900 z-10">
               <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
                 {editingUser ? 'Editar Usuário' : 'Novo Usuário'}
               </h3>
@@ -353,7 +353,7 @@ export const UsersView: React.FC = () => {
                 </div>
               )}
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800 sticky -bottom-6 -mb-6 pb-6 -mx-6 px-6 bg-white dark:bg-slate-900">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
