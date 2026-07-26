@@ -142,12 +142,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
           <span>Sair do Sistema</span>
         </button>
 
-        <div className="text-[10px] text-slate-500 flex items-center justify-between pt-1">
-          <span>v2.5 Full-Stack</span>
+        <div className="text-[10px] text-slate-500 flex flex-col gap-1 pt-1">
           <span className="text-blue-400 font-semibold flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-ping"></span>
             Conectado
           </span>
+          <span className="truncate">Desenvolvido Por Alisson Cordeiro</span>
         </div>
       </div>
     </aside>
