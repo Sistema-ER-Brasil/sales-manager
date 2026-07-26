@@ -5,7 +5,6 @@ import { Header } from './components/Header';
 import { DashboardView } from './components/DashboardView';
 import { OperationsTVPanel } from './components/OperationsTVPanel';
 import { SalesEntryForm } from './components/SalesEntryForm';
-import { SalesHistoryView } from './components/SalesHistoryView';
 import { CadastrosView } from './components/CadastrosView';
 import { GoalsView } from './components/GoalsView';
 import { ReportsView } from './components/ReportsView';
@@ -57,7 +56,6 @@ function MainApp() {
         <main className="flex-1 overflow-y-auto bg-white dark:bg-slate-950">
           {activeTab === 'dashboard' && <DashboardView />}
           {activeTab === 'entry' && <SalesEntryForm />}
-          {activeTab === 'history' && <SalesHistoryView />}
           {activeTab === 'cadastros' && <CadastrosView />}
           {activeTab === 'goals' && <GoalsView />}
           {activeTab === 'status-lancamento' && <UserSalesStatusView />}

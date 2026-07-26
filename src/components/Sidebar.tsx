@@ -3,7 +3,6 @@ import { useApp } from '../context/AppContext';
 import {
   LayoutDashboard,
   PlusCircle,
-  History,
   Package,
   Building2,
   Target,
@@ -43,7 +42,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
         { id: 'entry', label: 'Registrar Vendas', icon: PlusCircle },
         { id: 'reports', label: 'Relatórios & Matriz', icon: BarChart3 },
         { id: 'status-lancamento', label: 'Status Lançamento', icon: UserCheck, badge: 'NOVO', badgeColor: 'bg-blue-500 text-white', adminOnly: true },
-        { id: 'history', label: 'Histórico de Vendas', icon: History },
       ],
     },
     {

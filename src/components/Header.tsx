@@ -36,8 +36,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAu
           <h1 className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 capitalize tracking-tight">
             {activeTab === 'dashboard' && 'Dashboard Principal & Executivo'}
             {activeTab === 'operations' && 'Painel de Operações (Expedição / TV)'}
-            {activeTab === 'entry' && 'Lançamento de Vendas'}
-            {activeTab === 'history' && 'Histórico de Vendas'}
+            {activeTab === 'entry' && 'Lançamento & Histórico de Vendas'}
             {activeTab === 'cadastros' && 'Cadastro de CNPJs & Marketplaces'}
             {activeTab === 'goals' && 'Gestão de Metas'}
             {activeTab === 'status-lancamento' && 'Status de Lançamento por Usuário'}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getTodayString, formatCurrency } from '../utils/formatters';
 import { PlusCircle, Save, CheckCircle2, ShoppingBag, Layers, AlertCircle, Plus, Trash2, Clock, Store, X } from 'lucide-react';
+import { SalesHistoryView } from './SalesHistoryView';
 
 export const SalesEntryForm: React.FC = () => {
   const { currentUser, marketplaces, companies, sales, addSale, addSalesBatch } = useApp();
@@ -170,7 +171,7 @@ export const SalesEntryForm: React.FC = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-4">
+    <div className="p-4 sm:p-6 space-y-4">
       {/* Top Notification */}
       {successMessage && (
         <div className="p-4 bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-between animate-in fade-in slide-in-from-top duration-200">
@@ -554,6 +555,9 @@ export const SalesEntryForm: React.FC = () => {
         </div>
         </div>
       )}
+
+      {/* Sales History (merged into the same page) */}
+      <SalesHistoryView />
     </div>
   );
 };

@@ -521,7 +521,7 @@ export const UserSalesStatusView: React.FC = () => {
                   <button
                     onClick={() => {
                       setHistoryUserFilter(u.id);
-                      setActiveTab('history');
+                      setActiveTab('entry');
                     }}
                     className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
                   >
