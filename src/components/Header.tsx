@@ -43,8 +43,6 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAu
             {activeTab === 'reports' && 'Relatórios & Matriz Consolidada'}
             {activeTab === 'rankings' && 'Rankings de Desempenho'}
             {activeTab === 'import' && 'Importação de Dados'}
-            {activeTab === 'audit' && 'Trilha de Auditoria & Logs'}
-            {activeTab === 'users' && 'Gestão de Usuários e Permissões'}
             {activeTab === 'settings' && 'Configurações do Sistema'}
           </h1>
         </div>

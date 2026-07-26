@@ -10,8 +10,6 @@ import { GoalsView } from './components/GoalsView';
 import { ReportsView } from './components/ReportsView';
 import { RankingsView } from './components/RankingsView';
 import { ImportView } from './components/ImportView';
-import { AuditView } from './components/AuditView';
-import { UsersView } from './components/UsersView';
 import { UserSalesStatusView } from './components/UserSalesStatusView';
 import { SettingsView } from './components/SettingsView';
 import { FloatingSalesStatusWidget } from './components/FloatingSalesStatusWidget';
@@ -62,8 +60,6 @@ function MainApp() {
           {activeTab === 'reports' && <ReportsView />}
           {activeTab === 'rankings' && <RankingsView />}
           {activeTab === 'import' && <ImportView />}
-          {activeTab === 'audit' && <AuditView />}
-          {activeTab === 'users' && <UsersView />}
           {activeTab === 'settings' && <SettingsView />}
         </main>
       </div>

@@ -9,8 +9,6 @@ import {
   BarChart3,
   Trophy,
   Upload,
-  ShieldCheck,
-  Users,
   Settings,
   UserCheck,
   Store,
@@ -49,8 +47,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
       items: [
         { id: 'import', label: 'Importação', icon: Upload },
         { id: 'cadastros', label: 'Cadastros (CNPJs & Mkt)', icon: Building2, adminOnly: true },
-        { id: 'users', label: 'Usuários', icon: Users, adminOnly: true },
-        { id: 'audit', label: 'Auditoria & Logs', icon: ShieldCheck, adminOnly: true },
       ],
     },
     {

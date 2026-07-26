@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Settings, Volume2, VolumeX, Database, Key, Trash2, RotateCcw, ShieldCheck, LogOut, Camera, Loader2, KeyRound, Check } from 'lucide-react';
+import { Settings, Volume2, VolumeX, Database, Key, ShieldCheck, LogOut, Camera, Loader2, KeyRound, Check, Users as UsersIcon } from 'lucide-react';
 import { uploadLogoImage } from '../lib/upload';
 import { ChangePasswordModal } from './ChangePasswordModal';
+import { UsersView } from './UsersView';
+import { AuditView } from './AuditView';
 
 export const SettingsView: React.FC = () => {
-  const { settings, updateSettings, currentUser, updateUser, getAccessToken, sales, clearSampleData, restoreSampleData, logout } = useApp();
+  const { settings, updateSettings, currentUser, updateUser, getAccessToken, logout } = useApp();
   const isAdmin = currentUser.role === 'admin';
-  const [showConfirmClear, setShowConfirmClear] = useState(false);
-  const [showConfirmRestore, setShowConfirmRestore] = useState(false);
-  const [dataActionMessage, setDataActionMessage] = useState('');
+  const [adminTab, setAdminTab] = useState<'general' | 'users' | 'audit'>('general');
 
   // Self-service profile state (non-admin view)
   const [profileName, setProfileName] = useState(currentUser.name);
@@ -18,20 +18,6 @@ export const SettingsView: React.FC = () => {
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [avatarError, setAvatarError] = useState('');
   const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
-
-  const handleClear = () => {
-    clearSampleData();
-    setShowConfirmClear(false);
-    setDataActionMessage('Base zerada com sucesso! O sistema está pronto para receber suas vendas reais.');
-    setTimeout(() => setDataActionMessage(''), 4000);
-  };
-
-  const handleRestore = () => {
-    restoreSampleData();
-    setShowConfirmRestore(false);
-    setDataActionMessage('Dados de demonstração restaurados.');
-    setTimeout(() => setDataActionMessage(''), 4000);
-  };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -147,26 +133,56 @@ export const SettingsView: React.FC = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-6">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide">
-            Configurações Gerais & Banco de Dados
-          </h2>
+    <div className="p-4 sm:p-6 space-y-6">
+      <div className="max-w-4xl mx-auto w-full space-y-6">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide">
+              Configurações do Sistema
+            </h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-extrabold text-[11px] rounded-full flex items-center gap-1">
+              <Database className="w-3.5 h-3.5" /> Supabase Online
+            </span>
+          </div>
         </div>
-        <span className="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-extrabold text-[11px] rounded-full flex items-center gap-1">
-          <Database className="w-3.5 h-3.5" /> Supabase Online
-        </span>
+
+        {/* Admin sub-navigation: General / Users / Audit */}
+        <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-fit">
+          <button
+            onClick={() => setAdminTab('general')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+              adminTab === 'general' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'
+            }`}
+          >
+            <Settings className="w-3.5 h-3.5" /> Geral
+          </button>
+          <button
+            onClick={() => setAdminTab('users')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+              adminTab === 'users' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'
+            }`}
+          >
+            <UsersIcon className="w-3.5 h-3.5" /> Usuários
+          </button>
+          <button
+            onClick={() => setAdminTab('audit')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+              adminTab === 'audit' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5" /> Auditoria & Logs
+          </button>
+        </div>
       </div>
 
-      {dataActionMessage && (
-        <div className="p-4 bg-blue-50 border border-blue-200 dark:bg-blue-950/50 dark:border-blue-800 text-blue-800 dark:text-blue-200 rounded-2xl font-bold text-xs animate-fade-in flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-blue-600" />
-          <span>{dataActionMessage}</span>
-        </div>
-      )}
+      {adminTab === 'users' && <UsersView />}
+      {adminTab === 'audit' && <AuditView />}
 
+      {adminTab === 'general' && (
+      <div className="max-w-4xl mx-auto w-full space-y-6">
       {/* Sound Settings */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-6">
         <div>
@@ -186,84 +202,6 @@ export const SettingsView: React.FC = () => {
               className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
             />
           </label>
-        </div>
-
-        {/* Real Production Data & Base Management */}
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">Modo de Produção & Dados Reais</h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                Atualmente existem <strong className="text-blue-600 dark:text-blue-400">{sales.length} registros</strong> de vendas salvos no banco.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            <div className="p-4 border border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-950/20 rounded-xl space-y-2">
-              <div className="font-bold text-xs text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
-                <Trash2 className="w-4 h-4 text-blue-600" /> Zerar Base para Dados Reais
-              </div>
-              <p className="text-[11px] text-blue-700 dark:text-blue-300">
-                Remove os registros fictícios/demonstrativos para você operar 100% com dados reais da sua empresa.
-              </p>
-              {showConfirmClear ? (
-                <div className="flex items-center gap-2 pt-1">
-                  <button
-                    onClick={handleClear}
-                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-lg cursor-pointer"
-                  >
-                    Confirmar Zerar Dados
-                  </button>
-                  <button
-                    onClick={() => setShowConfirmClear(false)}
-                    className="px-3 py-1.5 bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-bold text-xs rounded-lg cursor-pointer"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowConfirmClear(true)}
-                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer"
-                >
-                  Zerar Registros Fictícios
-                </button>
-              )}
-            </div>
-
-            <div className="p-4 border border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-950/20 rounded-xl space-y-2">
-              <div className="font-bold text-xs text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
-                <RotateCcw className="w-4 h-4 text-blue-600" /> Restaurar Dados de Demonstração
-              </div>
-              <p className="text-[11px] text-blue-700 dark:text-blue-300">
-                Recarrega a base inicial de dados fictícios para testes e simulação de relatórios.
-              </p>
-              {showConfirmRestore ? (
-                <div className="flex items-center gap-2 pt-1">
-                  <button
-                    onClick={handleRestore}
-                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-lg cursor-pointer"
-                  >
-                    Confirmar Restauração
-                  </button>
-                  <button
-                    onClick={() => setShowConfirmRestore(false)}
-                    className="px-3 py-1.5 bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-bold text-xs rounded-lg cursor-pointer"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowConfirmRestore(true)}
-                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer"
-                >
-                  Restaurar Demonstração
-                </button>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Environment Variables Documentation */}
@@ -300,6 +238,8 @@ export const SettingsView: React.FC = () => {
           </div>
         </div>
       </div>
+      </div>
+      )}
     </div>
   );
 };
