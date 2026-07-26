@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 
 export const GoalsView: React.FC = () => {
-  const { goals, sales, marketplaces, companies, addGoal, updateGoal, deleteGoal, auditLogs, currentUser, setActiveTab } = useApp();
+  const { goals, sales, marketplaces, companies, addGoal, updateGoal, deleteGoal, auditLogs, currentUser } = useApp();
   const isAdmin = currentUser.role === 'admin';
 
   const todayStr = getTodayString();
@@ -242,15 +242,6 @@ export const GoalsView: React.FC = () => {
               <span>Nova Meta</span>
             </button>
           )}
-
-          {/* Audit Log Button */}
-          <button
-            onClick={() => setActiveTab('audit')}
-            className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-extrabold text-xs rounded-xl shadow-xs flex items-center gap-2 transition-all cursor-pointer"
-          >
-            <History className="w-4 h-4 text-blue-400" />
-            <span>Auditoria & Logs ({auditLogs.filter((l) => l.entity === 'goals').length}) </span>
-          </button>
 
           {/* Active Alerts Button */}
           {totalAlertGoalsCount > 0 && (
