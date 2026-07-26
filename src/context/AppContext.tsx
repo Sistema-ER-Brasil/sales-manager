@@ -121,6 +121,7 @@ interface AppContextType {
   isAuthenticated: boolean;
   login: (email: string, password?: string) => Promise<ActionResult>;
   logout: () => void;
+  getAccessToken: () => Promise<string>;
 
   // Last event trigger for live operational board / TV
   lastSaleTimestamp: number;
@@ -641,6 +642,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           name: profile.name,
           role: profile.role,
           assigned_marketplaces: packAssignments(profile.assignedMarketplaces, profile.assignedCompanies),
+          avatar: profile.avatar || null,
           status: profile.status,
         })
         .eq('id', profile.id);
@@ -820,6 +822,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         isAuthenticated,
         login,
         logout,
+        getAccessToken,
         lastSaleTimestamp,
       }}
     >

@@ -121,9 +121,13 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAu
               onClick={() => setShowUserDropdown(!showUserDropdown)}
               className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
-              <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
-                {currentUser.name.charAt(0)}
-              </div>
+              {currentUser.avatar ? (
+                <img src={currentUser.avatar} alt={currentUser.name} className="w-7 h-7 rounded-full object-cover shadow-xs" />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
+                  {currentUser.name.charAt(0)}
+                </div>
+              )}
               <div className="text-left hidden md:block">
                 <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
                   {currentUser.name}

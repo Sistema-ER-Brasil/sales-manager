@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { User } from '../types';
-import { Users, Plus, Edit2, Trash2, ShieldAlert, Check, X, Store, Building2, KeyRound, AlertCircle } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, ShieldAlert, Check, X, Store, Building2, KeyRound, AlertCircle, Camera, Loader2 } from 'lucide-react';
 import { ChangePasswordModal } from './ChangePasswordModal';
+import { uploadLogoImage } from '../lib/upload';
 
 export const UsersView: React.FC = () => {
-  const { users, marketplaces, companies, addUser, updateUser, deleteUser, currentUser } = useApp();
+  const { users, marketplaces, companies, addUser, updateUser, deleteUser, currentUser, getAccessToken } = useApp();
   const isAdmin = currentUser.role === 'admin';
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -17,6 +18,9 @@ export const UsersView: React.FC = () => {
   const [role, setRole] = useState<'admin' | 'user'>('user');
   const [assignedMarketplaces, setAssignedMarketplaces] = useState<string[]>([]);
   const [assignedCompanies, setAssignedCompanies] = useState<string[]>([]);
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState('');
   const [formError, setFormError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -43,6 +47,8 @@ export const UsersView: React.FC = () => {
     setRole('user');
     setAssignedMarketplaces(['shopee']);
     setAssignedCompanies([]);
+    setAvatarUrl('');
+    setAvatarError('');
     setFormError('');
     setModalOpen(true);
   };
@@ -55,8 +61,25 @@ export const UsersView: React.FC = () => {
     setRole(u.role);
     setAssignedMarketplaces(u.assignedMarketplaces || []);
     setAssignedCompanies(u.assignedCompanies || []);
+    setAvatarUrl(u.avatar || '');
+    setAvatarError('');
     setFormError('');
     setModalOpen(true);
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file || !editingUser) return;
+    setAvatarUploading(true);
+    setAvatarError('');
+    const result = await uploadLogoImage(file, `avatars/${editingUser.id}`, getAccessToken);
+    setAvatarUploading(false);
+    if (result.error) {
+      setAvatarError(result.error);
+      return;
+    }
+    setAvatarUrl(result.url || '');
   };
 
   const openChangePasswordForUser = (u: User) => {
@@ -89,6 +112,7 @@ export const UsersView: React.FC = () => {
           role,
           assignedMarketplaces,
           assignedCompanies,
+          avatar: avatarUrl || undefined,
           ...(password ? { password } : {}),
         })
       : await addUser({
@@ -180,9 +204,18 @@ export const UsersView: React.FC = () => {
               </div>
             </div>
 
-            <div>
-              <h3 className="font-extrabold text-sm text-slate-900 dark:text-slate-100">{u.name}</h3>
-              <p className="text-xs text-slate-500">{u.email}</p>
+            <div className="flex items-center gap-3">
+              {u.avatar ? (
+                <img src={u.avatar} alt={u.name} className="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700 shrink-0" />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold shrink-0">
+                  {u.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div>
+                <h3 className="font-extrabold text-sm text-slate-900 dark:text-slate-100">{u.name}</h3>
+                <p className="text-xs text-slate-500">{u.email}</p>
+              </div>
             </div>
 
             <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
@@ -252,6 +285,29 @@ export const UsersView: React.FC = () => {
                   <span>{formError}</span>
                 </div>
               )}
+
+              {editingUser ? (
+                <div className="flex items-center gap-3">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={name} className="w-14 h-14 rounded-full object-cover border border-slate-200 dark:border-slate-700" />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-lg font-bold">
+                      {name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <label className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800">
+                      {avatarUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                      <span>{avatarUploading ? 'Enviando...' : 'Trocar Foto'}</span>
+                      <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={avatarUploading} />
+                    </label>
+                    {avatarError && <p className="text-blue-600 text-[11px] font-semibold mt-1">{avatarError}</p>}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-[11px] text-slate-400 italic">Salve o usuário primeiro para poder adicionar uma foto.</p>
+              )}
+
               <div>
                 <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nome Completo *</label>
                 <input
