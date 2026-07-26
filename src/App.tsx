@@ -37,7 +37,7 @@ function MainApp() {
             onClick={() => setActiveTab('dashboard')}
             className="px-3 py-1.5 bg-slate-900/90 border border-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold shadow-lg backdrop-blur-md transition-colors"
           >
-            ← Sair do Modo TV
+             Sair do Modo TV
           </button>
         </div>
         <OperationsTVPanel />

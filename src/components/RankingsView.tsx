@@ -103,7 +103,7 @@ export const RankingsView: React.FC = () => {
               #1
             </div>
             <h3 className="font-extrabold text-base text-slate-900 dark:text-white truncate">{rankedList[0].name}</h3>
-            <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 my-1">{formatCurrency(rankedList[0].revenue)}</div>
+            <div className="text-2xl font-black text-blue-600 dark:text-blue-400 my-1">{formatCurrency(rankedList[0].revenue)}</div>
             <div className="text-xs text-slate-600 dark:text-slate-400 font-bold">{rankedList[0].qty} un expedidas</div>
           </div>
 
@@ -141,7 +141,7 @@ export const RankingsView: React.FC = () => {
                   <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{item.name}</td>
                   <td className="p-3 text-center font-bold">{item.orders}</td>
                   <td className="p-3 text-center font-bold text-slate-600 dark:text-slate-300">{item.qty} un</td>
-                  <td className="p-3 text-right font-black text-emerald-600 dark:text-emerald-400">{formatCurrency(item.revenue)}</td>
+                  <td className="p-3 text-right font-black text-blue-600 dark:text-blue-400">{formatCurrency(item.revenue)}</td>
                 </tr>
               ))}
             </tbody>

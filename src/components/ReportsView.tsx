@@ -178,10 +178,10 @@ export const ReportsView: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <button onClick={handleExportExcel} className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer">
+            <button onClick={handleExportExcel} className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer">
               <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
             </button>
-            <button onClick={handleExportPDF} className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer">
+            <button onClick={handleExportPDF} className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer">
               <FileText className="w-3.5 h-3.5" /> PDF
             </button>
             <button
@@ -258,7 +258,7 @@ export const ReportsView: React.FC = () => {
                   <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{row.name}</td>
                   <td className="p-3 text-center font-bold">{row.orders}</td>
                   <td className="p-3 text-center font-bold text-slate-600 dark:text-slate-300">{row.quantity} un</td>
-                  <td className="p-3 text-right font-black text-emerald-600 dark:text-emerald-400">{formatCurrency(row.revenue)}</td>
+                  <td className="p-3 text-right font-black text-blue-600 dark:text-blue-400">{formatCurrency(row.revenue)}</td>
                   <td className="p-3 text-right font-medium text-slate-500">{formatCurrency(row.ticket)}</td>
                 </tr>
               ))}
@@ -268,7 +268,7 @@ export const ReportsView: React.FC = () => {
                 <td className="p-3 uppercase">TOTALIZADOR GERAL</td>
                 <td className="p-3 text-center">{totalOrd}</td>
                 <td className="p-3 text-center">{totalQty} un</td>
-                <td className="p-3 text-right text-emerald-600 dark:text-emerald-400 text-sm">{formatCurrency(totalRev)}</td>
+                <td className="p-3 text-right text-blue-600 dark:text-blue-400 text-sm">{formatCurrency(totalRev)}</td>
                 <td className="p-3 text-right text-slate-500">{formatCurrency(totalOrd > 0 ? totalRev / totalOrd : 0)}</td>
               </tr>
             </tfoot>

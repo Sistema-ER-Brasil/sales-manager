@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAu
             >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-blue-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center animate-pulse">
                   {unreadCount}
                 </span>
               )}
@@ -76,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAu
                   {notifications.length > 0 && (
                     <button
                       onClick={clearAllNotifications}
-                      className="text-[11px] text-red-600 hover:underline flex items-center gap-1"
+                      className="text-[11px] text-blue-600 hover:underline flex items-center gap-1"
                     >
                       <Trash2 className="w-3 h-3" /> Limpar
                     </button>
@@ -128,7 +128,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAu
                 <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
                   {currentUser.name}
                   {currentUser.role === 'admin' && (
-                    <span className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-[10px] px-1.5 py-0.2 rounded font-medium">
+                    <span className="bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 text-[10px] px-1.5 py-0.2 rounded font-medium">
                       Admin
                     </span>
                   )}
@@ -164,9 +164,9 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAu
                       setShowUserDropdown(false);
                       logout();
                     }}
-                    className="w-full text-left px-2 py-1.5 text-xs text-rose-600 dark:text-rose-400 font-extrabold hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="w-full text-left px-2 py-1.5 text-xs text-blue-600 dark:text-blue-400 font-extrabold hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
-                    <LogOut className="w-3.5 h-3.5 text-rose-600" /> Sair do Sistema (Logout)
+                    <LogOut className="w-3.5 h-3.5 text-blue-600" /> Sair do Sistema (Logout)
                   </button>
                 </div>
               </div>

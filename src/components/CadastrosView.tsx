@@ -34,7 +34,7 @@ export const CadastrosView: React.FC = () => {
     if (editingCompId) {
       updateCompany({ id: editingCompId, code, name, cnpj, status: 'active', badgeColor: 'bg-blue-600 text-white' });
     } else {
-      addCompany({ code, name, cnpj, status: 'active', badgeColor: 'bg-indigo-600 text-white' });
+      addCompany({ code, name, cnpj, status: 'active', badgeColor: 'bg-blue-600 text-white' });
     }
     setCompModal(false);
   };
@@ -99,7 +99,7 @@ export const CadastrosView: React.FC = () => {
                 >
                   <Edit2 className="w-4 h-4" />
                 </button>
-                <button onClick={() => deleteCompany(c.id)} className="p-1.5 text-slate-400 hover:text-red-600">
+                <button onClick={() => deleteCompany(c.id)} className="p-1.5 text-slate-400 hover:text-blue-600">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -112,7 +112,7 @@ export const CadastrosView: React.FC = () => {
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Store className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <Store className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide">
               Marketplaces Integrados ({marketplaces.length})
             </h2>
@@ -125,7 +125,7 @@ export const CadastrosView: React.FC = () => {
               setMktColor('#10b981');
               setMktModal(true);
             }}
-            className="px-3.5 py-1.5 bg-emerald-600 text-white font-bold text-xs rounded-xl flex items-center gap-1.5"
+            className="px-3.5 py-1.5 bg-blue-600 text-white font-bold text-xs rounded-xl flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" /> Criar Novo Marketplace
           </button>
@@ -151,7 +151,7 @@ export const CadastrosView: React.FC = () => {
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
-                <button onClick={() => deleteMarketplace(m.id)} className="p-1 text-slate-400 hover:text-red-600">
+                <button onClick={() => deleteMarketplace(m.id)} className="p-1 text-slate-400 hover:text-blue-600">
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -209,7 +209,7 @@ export const CadastrosView: React.FC = () => {
               </div>
               <div className="flex justify-end gap-2 pt-3">
                 <button type="button" onClick={() => setMktModal(false)} className="px-3 py-1.5 border rounded-lg">Cancelar</button>
-                <button type="submit" className="px-4 py-1.5 bg-emerald-600 text-white font-bold rounded-lg">Salvar Marketplace</button>
+                <button type="submit" className="px-4 py-1.5 bg-blue-600 text-white font-bold rounded-lg">Salvar Marketplace</button>
               </div>
             </form>
           </div>

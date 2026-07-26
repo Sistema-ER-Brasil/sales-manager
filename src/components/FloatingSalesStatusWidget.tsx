@@ -56,7 +56,7 @@ export const FloatingSalesStatusWidget: React.FC = () => {
                 onClick={() => setIsExpanded(false)}
                 className="text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-1"
               >
-                ✕
+                
               </button>
             </div>
 
@@ -66,21 +66,21 @@ export const FloatingSalesStatusWidget: React.FC = () => {
                   key={m.id}
                   className={`p-2 rounded-xl border text-xs flex items-center justify-between ${
                     m.isLogged
-                      ? 'bg-emerald-50/60 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/50 text-emerald-900 dark:text-emerald-100'
+                      ? 'bg-blue-50/60 dark:bg-blue-950/40 border-blue-200 dark:border-blue-900/50 text-blue-900 dark:text-blue-100'
                       : 'bg-blue-50/80 dark:bg-blue-950/40 border-blue-300 dark:border-blue-950/60 text-blue-950 dark:text-blue-100'
                   }`}
                 >
                   <div>
                     <span className="font-bold block uppercase text-[11px]">{m.name}</span>
                     <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                      {m.isLogged ? `${m.salesCount} venda(s) • ${formatCurrency(m.totalVal)}` : '⚠️ Venda não registrada'}
+                      {m.isLogged ? `${m.salesCount} venda(s) • ${formatCurrency(m.totalVal)}` : ' Venda não registrada'}
                     </span>
                   </div>
 
                   <div>
                     {m.isLogged ? (
-                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100 uppercase">
-                        ✓ OK
+                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-blue-200 text-blue-800 dark:bg-blue-900 dark:text-blue-100 uppercase">
+                         OK
                       </span>
                     ) : (
                       <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-blue-900 text-white uppercase animate-pulse">
@@ -113,7 +113,7 @@ export const FloatingSalesStatusWidget: React.FC = () => {
             onClick={() => setIsExpanded(!isExpanded)}
             className={`w-12 h-12 rounded-xl shadow-xl border flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 ${
               isFullyFilled
-                ? 'bg-emerald-600 border-emerald-400 text-white shadow-emerald-600/30'
+                ? 'bg-blue-600 border-blue-400 text-white shadow-blue-600/30'
                 : 'bg-blue-800 border-blue-300 text-white shadow-blue-800/40 animate-pulse'
             }`}
             title={isFullyFilled ? 'Vendas do dia preenchidas (Clique para ver detalhes)' : 'Atenção: Vendas pendentes para hoje! Clique para ver'}
@@ -126,7 +126,7 @@ export const FloatingSalesStatusWidget: React.FC = () => {
 
             {/* Notification Badge Count */}
             {!isFullyFilled && pendingMarketplaces.length > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-600 text-white font-black text-[10px] flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md animate-pulse">
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-blue-600 text-white font-black text-[10px] flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md animate-pulse">
                 {pendingMarketplaces.length}
               </span>
             )}
@@ -135,9 +135,9 @@ export const FloatingSalesStatusWidget: React.FC = () => {
           {/* Hover Tooltip */}
           <div className="absolute right-14 bottom-1/2 translate-y-1/2 hidden group-hover:flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg whitespace-nowrap shadow-xl border border-slate-700 pointer-events-none z-50">
             {isFullyFilled ? (
-              <span>✓ Vendas de hoje 100% lançadas</span>
+              <span> Vendas de hoje 100% lançadas</span>
             ) : (
-              <span>⚠️ {pendingMarketplaces.length} canal(is) pendente(s) hoje</span>
+              <span> {pendingMarketplaces.length} canal(is) pendente(s) hoje</span>
             )}
           </div>
         </div>
@@ -169,7 +169,7 @@ export const FloatingSalesStatusWidget: React.FC = () => {
               onClick={() => setIsExpanded(false)}
               className="text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-1"
             >
-              ✕
+              
             </button>
           </div>
 
@@ -202,7 +202,7 @@ export const FloatingSalesStatusWidget: React.FC = () => {
           <UserCheck className="w-6 h-6 text-white" />
 
           {pendingSellersCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-600 text-white font-black text-[10px] flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md animate-pulse">
+            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-blue-600 text-white font-black text-[10px] flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-md animate-pulse">
               {pendingSellersCount}
             </span>
           )}

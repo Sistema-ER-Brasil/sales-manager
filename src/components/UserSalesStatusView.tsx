@@ -161,19 +161,19 @@ export const UserSalesStatusView: React.FC = () => {
           <div
             className={`p-4 rounded-xl border flex items-center justify-between ${
               isAllFilled
-                ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
+                ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-300 dark:border-blue-800 text-blue-800 dark:text-blue-200'
                 : 'bg-blue-50 dark:bg-blue-950/40 border-blue-300 dark:border-blue-950 text-blue-950 dark:text-blue-200 animate-pulse'
             }`}
           >
             <div className="flex items-center gap-3">
               {isAllFilled ? (
-                <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-6 h-6 text-blue-600 dark:text-blue-400 shrink-0" />
               ) : (
                 <AlertTriangle className="w-6 h-6 text-blue-900 dark:text-blue-400 shrink-0" />
               )}
               <div>
                 <div className="font-extrabold text-sm uppercase">
-                  {isAllFilled ? '✓ Preenchimento Completo' : `⚠️ Vendas Pendentes (${pendingMarketplaces.length} canal)`}
+                  {isAllFilled ? ' Preenchimento Completo' : ` Vendas Pendentes (${pendingMarketplaces.length} canal)`}
                 </div>
                 <div className="text-xs mt-0.5 opacity-90">
                   {isAllFilled
@@ -210,7 +210,7 @@ export const UserSalesStatusView: React.FC = () => {
                     key={mId}
                     className={`p-3 rounded-xl border flex items-center justify-between ${
                       isLogged
-                        ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50'
+                        ? 'bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900/50'
                         : 'bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-950/50'
                     }`}
                   >
@@ -225,8 +225,8 @@ export const UserSalesStatusView: React.FC = () => {
 
                     <div>
                       {isLogged ? (
-                        <span className="text-[10px] font-black px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 uppercase">
-                          ✓ Lançado
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 uppercase">
+                           Lançado
                         </span>
                       ) : (
                         <button
@@ -293,12 +293,12 @@ export const UserSalesStatusView: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-2.5 bg-emerald-50/60 dark:bg-emerald-950/30 rounded-lg border border-emerald-200/50 dark:border-emerald-900/40">
-            <div className="text-[10px] font-bold uppercase text-emerald-700 dark:text-emerald-400 flex items-center justify-between">
+          <div className="p-2.5 bg-blue-50/60 dark:bg-blue-950/30 rounded-lg border border-blue-200/50 dark:border-blue-900/40">
+            <div className="text-[10px] font-bold uppercase text-blue-700 dark:text-blue-400 flex items-center justify-between">
               <span>Lançaram Venda</span>
               <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
-            <div className="text-lg font-black text-emerald-700 dark:text-emerald-400 mt-0.5">
+            <div className="text-lg font-black text-blue-700 dark:text-blue-400 mt-0.5">
               {loggedCount} <span className="text-xs font-bold">({completionRate}%)</span>
             </div>
           </div>
@@ -341,8 +341,8 @@ export const UserSalesStatusView: React.FC = () => {
               onClick={() => setFilterStatus('DONE')}
               className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all flex items-center gap-1 ${
                 filterStatus === 'DONE'
-                  ? 'bg-emerald-600 text-white shadow-2xs'
-                  : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100'
+                  ? 'bg-blue-600 text-white shadow-2xs'
+                  : 'bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 hover:bg-blue-100'
               }`}
             >
               <CheckCircle2 className="w-3 h-3" /> Lançaram ({loggedCount})
@@ -383,14 +383,14 @@ export const UserSalesStatusView: React.FC = () => {
               key={u.id}
               className={`bg-white dark:bg-slate-900 border rounded-xl p-4 shadow-2xs space-y-3 transition-all relative overflow-hidden ${
                 isDone
-                  ? 'border-emerald-200 dark:border-emerald-900/50 hover:border-emerald-400'
+                  ? 'border-blue-200 dark:border-blue-900/50 hover:border-blue-400'
                   : 'border-blue-200 dark:border-blue-950/50 hover:border-blue-400'
               }`}
             >
               {/* Status Indicator Bar on Left */}
               <div
                 className={`absolute left-0 top-0 bottom-0 w-1.5 ${
-                  isDone ? 'bg-emerald-500' : 'bg-blue-800'
+                  isDone ? 'bg-blue-500' : 'bg-blue-800'
                 }`}
               />
 
@@ -400,7 +400,7 @@ export const UserSalesStatusView: React.FC = () => {
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm text-white shrink-0 ${
                       isDone
-                        ? 'bg-gradient-to-tr from-emerald-600 to-teal-500'
+                        ? 'bg-gradient-to-tr from-blue-600 to-blue-500'
                         : 'bg-gradient-to-tr from-blue-800 to-blue-800'
                     }`}
                   >
@@ -416,7 +416,7 @@ export const UserSalesStatusView: React.FC = () => {
                       <span
                         className={`text-[9px] font-black px-1.5 py-0.2 rounded uppercase ${
                           u.role === 'admin'
-                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300'
+                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                             : 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                         }`}
                       >
@@ -430,8 +430,8 @@ export const UserSalesStatusView: React.FC = () => {
                 {/* Status Badge */}
                 <div>
                   {isDone ? (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300/50">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-300/50">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                       Lançado
                     </span>
                   ) : (
@@ -462,11 +462,11 @@ export const UserSalesStatusView: React.FC = () => {
                           key={mId}
                           className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
                             isChannelLogged
-                              ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 text-emerald-800 dark:text-emerald-300'
+                              ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-300 text-blue-800 dark:text-blue-300'
                               : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
                           }`}
                         >
-                          {mObj ? mObj.name : mId} {isChannelLogged && '✓'}
+                          {mObj ? mObj.name : mId} {isChannelLogged && ''}
                         </span>
                       );
                     })
@@ -481,7 +481,7 @@ export const UserSalesStatusView: React.FC = () => {
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200/80 dark:border-slate-800 grid grid-cols-3 gap-2 text-center ml-1">
                   <div>
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">Total Lançado</span>
-                    <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
+                    <span className="text-xs font-black text-blue-600 dark:text-blue-400">
                       {formatCurrency(item.totalAmount)}
                     </span>
                   </div>
@@ -580,12 +580,12 @@ export const UserSalesStatusView: React.FC = () => {
                     </td>
                     <td className="p-2.5">
                       {d.hasLogged ? (
-                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                          ✓ LANÇADO ({d.salesCount})
+                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                           LANÇADO ({d.salesCount})
                         </span>
                       ) : (
                         <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-blue-100 text-blue-950 dark:bg-blue-950 dark:text-blue-300">
-                          ✕ NÃO LANÇOU
+                           NÃO LANÇOU
                         </span>
                       )}
                     </td>

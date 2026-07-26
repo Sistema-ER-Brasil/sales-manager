@@ -405,7 +405,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const newNotif: NotificationItem = {
       id: `notif_${Date.now()}`,
       type: 'sale',
-      title: '💵 Nova Venda Registrada',
+      title: ' Nova Venda Registrada',
       message: `${currentUser.name} registrou R$ ${saleData.totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} no ${saleData.marketplaceId.toUpperCase()} (${saleData.companyId}).`,
       read: false,
       createdAt: new Date().toISOString(),
@@ -439,7 +439,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const newNotif: NotificationItem = {
       id: `notif_${Date.now()}`,
       type: 'sale',
-      title: '📦 Lançamento em Lote',
+      title: ' Lançamento em Lote',
       message: `${items.length} vendas gravadas no valor total de R$ ${totalVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}.`,
       read: false,
       createdAt: now,

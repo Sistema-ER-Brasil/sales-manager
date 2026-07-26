@@ -268,11 +268,11 @@ export const DashboardView: React.FC = () => {
           </div>
           <div className="flex items-center gap-1 text-[10px] font-semibold mt-1">
             {revGrowth >= 0 ? (
-              <span className="text-emerald-600 dark:text-emerald-400 flex items-center">
+              <span className="text-blue-600 dark:text-blue-400 flex items-center">
                 <ArrowUpRight className="w-3 h-3" />+{revGrowth.toFixed(1)}% vs ontem
               </span>
             ) : (
-              <span className="text-red-600 dark:text-red-400 flex items-center">
+              <span className="text-blue-600 dark:text-blue-400 flex items-center">
                 <ArrowDownRight className="w-3 h-3" />
                 {revGrowth.toFixed(1)}% vs ontem
               </span>
@@ -286,7 +286,7 @@ export const DashboardView: React.FC = () => {
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Pedidos Total
             </span>
-            <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+            <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
               <ShoppingBag className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -318,14 +318,14 @@ export const DashboardView: React.FC = () => {
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Receita
             </span>
-            <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+            <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
               <TrendingUp className="w-3.5 h-3.5" />
             </div>
           </div>
           <div className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">
             {formatCurrency(totalRevenue)}
           </div>
-          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 font-semibold">
+          <div className="text-[10px] text-blue-600 dark:text-blue-400 mt-1 font-semibold">
             100% faturado
           </div>
         </div>
@@ -371,7 +371,7 @@ export const DashboardView: React.FC = () => {
       {/* Chart: Line Chart Daily Evolution */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3">
         <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           Evolução do Faturamento Diário
         </h3>
         <div className="h-64">

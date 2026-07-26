@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
     <aside className="w-56 bg-slate-900 text-slate-300 flex flex-col h-screen sticky top-0 z-40 border-r border-slate-800 transition-all select-none shrink-0">
       {/* Brand Header */}
       <div className="p-3 border-b border-slate-800 flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-black text-sm shadow-xs shadow-blue-500/20 shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-blue-500 flex items-center justify-center text-white font-black text-sm shadow-xs shadow-blue-500/20 shrink-0">
           MS
         </div>
         <div className="truncate">
@@ -137,17 +137,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
       <div className="p-2.5 border-t border-slate-800 space-y-2">
         <button
           onClick={logout}
-          className="w-full flex items-center gap-2 px-2.5 py-1.5 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-900/50 text-rose-300 rounded-md text-[11px] font-bold transition-all cursor-pointer"
+          className="w-full flex items-center gap-2 px-2.5 py-1.5 bg-blue-950/40 hover:bg-blue-900/60 border border-blue-900/50 text-blue-300 rounded-md text-[11px] font-bold transition-all cursor-pointer"
           title="Encerrar sessão e sair do sistema"
         >
-          <LogOut className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+          <LogOut className="w-3.5 h-3.5 text-blue-400 shrink-0" />
           <span>Sair do Sistema</span>
         </button>
 
         <div className="text-[10px] text-slate-500 flex items-center justify-between pt-1">
           <span>v2.5 Full-Stack</span>
-          <span className="text-emerald-400 font-semibold flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-ping"></span>
+          <span className="text-blue-400 font-semibold flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-ping"></span>
             Conectado
           </span>
         </div>

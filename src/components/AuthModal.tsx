@@ -55,7 +55,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, isFullScr
 
         {/* Modal Header */}
         <div className="p-6 bg-slate-900 text-white text-center border-b border-slate-800 relative">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-extrabold text-2xl shadow-xl shadow-blue-500/30 mb-3">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-500 flex items-center justify-center text-white font-extrabold text-2xl shadow-xl shadow-blue-500/30 mb-3">
             MS
           </div>
           <h2 className="text-lg font-extrabold tracking-tight">Marketplace Sales Manager</h2>
@@ -64,8 +64,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, isFullScr
 
         <div className="p-6 space-y-5">
           {errorMessage && (
-            <div className="p-3 bg-rose-50 border border-rose-200 dark:bg-rose-950/50 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-xl text-xs font-semibold flex items-center gap-2 animate-shake">
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <div className="p-3 bg-blue-50 border border-blue-200 dark:bg-blue-950/50 dark:border-blue-800 text-blue-700 dark:text-blue-300 rounded-xl text-xs font-semibold flex items-center gap-2 animate-shake">
+              <AlertCircle className="w-4 h-4 text-blue-600 shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
@@ -140,7 +140,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, isFullScr
         </div>
 
         <div className="p-3 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 text-center text-[10px] text-slate-400 font-medium">
-          🔒 Conexão Criptografada & Protegida por Supabase Auth
+           Conexão Criptografada & Protegida por Supabase Auth
         </div>
       </div>
     </div>

@@ -99,7 +99,7 @@ export const ImportView: React.FC = () => {
   return (
     <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
       {successMsg && (
-        <div className="p-4 bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-2 animate-in fade-in">
+        <div className="p-4 bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-2 animate-in fade-in">
           <CheckCircle2 className="w-5 h-5" />
           <span>{successMsg}</span>
         </div>
@@ -121,7 +121,7 @@ export const ImportView: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* File Drag and Drop */}
           <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 text-center hover:border-blue-500 transition-colors">
-            <FileSpreadsheet className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
+            <FileSpreadsheet className="w-10 h-10 text-blue-500 mx-auto mb-2" />
             <h3 className="font-bold text-xs text-slate-800 dark:text-slate-200">Importar Planilha Excel (.xlsx / .csv)</h3>
             <p className="text-[11px] text-slate-400 my-2">Arraste um arquivo de vendas ou clique para selecionar</p>
             <label className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl cursor-pointer inline-block transition-colors">
@@ -156,7 +156,7 @@ export const ImportView: React.FC = () => {
 
             <button
               onClick={handleConfirmImport}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-colors flex items-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" /> Confirmar & Gravar Vendas
             </button>
@@ -183,7 +183,7 @@ export const ImportView: React.FC = () => {
                     <td className="p-2.5 font-bold text-blue-600">{row.companyId}</td>
                     <td className="p-2.5">{row.productName}</td>
                     <td className="p-2.5 text-center font-bold">{row.quantity} un</td>
-                    <td className="p-2.5 text-right font-black text-emerald-600">{formatCurrency(row.totalValue)}</td>
+                    <td className="p-2.5 text-right font-black text-blue-600">{formatCurrency(row.totalValue)}</td>
                     <td className="p-2.5 text-slate-400 truncate max-w-xs">{row.notes}</td>
                   </tr>
                 ))}

@@ -134,7 +134,7 @@ export const UsersView: React.FC = () => {
               <span
                 className={`text-[10px] font-extrabold px-2 py-0.5 rounded uppercase ${
                   u.role === 'admin'
-                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                     : 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                 }`}
               >
@@ -160,7 +160,7 @@ export const UsersView: React.FC = () => {
                   <button
                     onClick={() => handleDelete(u.id)}
                     disabled={deletingId === u.id}
-                    className="p-1 text-slate-400 hover:text-red-600 disabled:opacity-50"
+                    className="p-1 text-slate-400 hover:text-blue-600 disabled:opacity-50"
                     title="Excluir Usuário"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -181,7 +181,7 @@ export const UsersView: React.FC = () => {
 
               <div className="flex flex-wrap gap-1">
                 {u.role === 'admin' ? (
-                  <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold">Todos os Canais (Acesso Total)</span>
+                  <span className="text-xs text-blue-600 dark:text-blue-400 font-bold">Todos os Canais (Acesso Total)</span>
                 ) : (
                   u.assignedMarketplaces.map((mId) => {
                     const mObj = marketplaces.find((item) => item.id === mId || item.slug === mId);
@@ -213,7 +213,7 @@ export const UsersView: React.FC = () => {
 
             <form onSubmit={handleSave} className="space-y-4">
               {formError && (
-                <div className="p-2.5 bg-rose-50 border border-rose-200 dark:bg-rose-950/50 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-xl text-xs font-semibold flex items-center gap-2">
+                <div className="p-2.5 bg-blue-50 border border-blue-200 dark:bg-blue-950/50 dark:border-blue-800 text-blue-700 dark:text-blue-300 rounded-xl text-xs font-semibold flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{formError}</span>
                 </div>

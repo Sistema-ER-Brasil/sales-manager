@@ -50,7 +50,7 @@ export const AuditView: React.FC = () => {
       {/* Top Header Card */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <div className="p-3 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
@@ -58,7 +58,7 @@ export const AuditView: React.FC = () => {
               <h2 className="text-base font-extrabold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
                 Auditoria & Trilha de Registros
               </h2>
-              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800">
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-800">
                 {auditLogs.length} Registros Gravados
               </span>
             </div>
@@ -76,7 +76,7 @@ export const AuditView: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Pesquisar por usuário, IP, ação ou detalhe..."
-            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none"
+            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
           />
         </div>
       </div>
@@ -100,12 +100,12 @@ export const AuditView: React.FC = () => {
             onClick={() => setSelectedEntity('goals')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               selectedEntity === 'goals'
-                ? 'bg-purple-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400'
             }`}
           >
             <Target className="w-3.5 h-3.5" />
-            <span>🎯 Alterações de Metas ({goalsLogsCount})</span>
+            <span> Alterações de Metas ({goalsLogsCount})</span>
           </button>
 
           <button
@@ -117,7 +117,7 @@ export const AuditView: React.FC = () => {
             }`}
           >
             <ShoppingBag className="w-3.5 h-3.5" />
-            <span>🛒 Registros de Vendas ({salesLogsCount})</span>
+            <span> Registros de Vendas ({salesLogsCount})</span>
           </button>
 
           <button
@@ -129,7 +129,7 @@ export const AuditView: React.FC = () => {
             }`}
           >
             <Users className="w-3.5 h-3.5" />
-            <span>👥 Usuários & Acessos ({usersLogsCount})</span>
+            <span> Usuários & Acessos ({usersLogsCount})</span>
           </button>
         </div>
 
@@ -163,8 +163,8 @@ export const AuditView: React.FC = () => {
 
                 if (log.entity === 'goals') {
                   entityBadge = (
-                    <span className="px-2 py-0.5 text-[10px] font-extrabold rounded bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800 uppercase flex items-center gap-1 w-fit">
-                      <Target className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                    <span className="px-2 py-0.5 text-[10px] font-extrabold rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800 uppercase flex items-center gap-1 w-fit">
+                      <Target className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                       Metas
                     </span>
                   );
@@ -192,13 +192,13 @@ export const AuditView: React.FC = () => {
 
                 if (log.action === 'CREATE') {
                   actionBadge = (
-                    <span className="px-2.5 py-0.5 text-[10px] font-extrabold rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 uppercase">
+                    <span className="px-2.5 py-0.5 text-[10px] font-extrabold rounded-md bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 uppercase">
                       Criação
                     </span>
                   );
                 } else if (log.action === 'DELETE') {
                   actionBadge = (
-                    <span className="px-2.5 py-0.5 text-[10px] font-extrabold rounded-md bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 uppercase">
+                    <span className="px-2.5 py-0.5 text-[10px] font-extrabold rounded-md bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 uppercase">
                       Exclusão
                     </span>
                   );

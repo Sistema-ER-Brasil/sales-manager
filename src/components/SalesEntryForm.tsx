@@ -168,7 +168,7 @@ export const SalesEntryForm: React.FC = () => {
     <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-4">
       {/* Top Notification */}
       {successMessage && (
-        <div className="p-4 bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-between animate-in fade-in slide-in-from-top duration-200">
+        <div className="p-4 bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-between animate-in fade-in slide-in-from-top duration-200">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5" />
             <span>{successMessage}</span>
@@ -180,7 +180,7 @@ export const SalesEntryForm: React.FC = () => {
       <div
         className={`border rounded-2xl p-4 shadow-2xs space-y-3 transition-all ${
           isFullyFilled
-            ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800'
+            ? 'bg-blue-50/70 dark:bg-blue-950/30 border-blue-300 dark:border-blue-800'
             : 'bg-blue-50/70 dark:bg-blue-950/30 border-blue-300 dark:border-blue-950'
         }`}
       >
@@ -188,7 +188,7 @@ export const SalesEntryForm: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <div
               className={`p-2 rounded-xl text-white ${
-                isFullyFilled ? 'bg-emerald-600' : 'bg-blue-900 animate-pulse'
+                isFullyFilled ? 'bg-blue-600' : 'bg-blue-900 animate-pulse'
               }`}
             >
               {isFullyFilled ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
@@ -201,11 +201,11 @@ export const SalesEntryForm: React.FC = () => {
                 <span
                   className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase ${
                     isFullyFilled
-                      ? 'bg-emerald-200 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100'
+                      ? 'bg-blue-200 text-blue-900 dark:bg-blue-900 dark:text-blue-100'
                       : 'bg-blue-200 text-blue-950 dark:bg-blue-950 dark:text-blue-100 animate-pulse'
                   }`}
                 >
-                  {isFullyFilled ? '✓ 100% Preenchido' : `⚠️ ${pendingMarketplaces.length} Pendente(s)`}
+                  {isFullyFilled ? ' 100% Preenchido' : ` ${pendingMarketplaces.length} Pendente(s)`}
                 </span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
@@ -235,14 +235,14 @@ export const SalesEntryForm: React.FC = () => {
                 }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs ${
                   item.isFilled
-                    ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300 hover:bg-emerald-200'
+                    ? 'bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border-blue-300 hover:bg-blue-200'
                     : 'bg-white dark:bg-slate-900 text-blue-950 dark:text-blue-300 border-blue-400 hover:bg-blue-100/80'
                 }`}
               >
                 <span>{m.name}</span>
                 {item.isFilled ? (
-                  <span className="text-[10px] bg-emerald-600 text-white px-1.5 py-0.2 rounded font-black">
-                    ✓ Lançado ({formatCurrency(item.totalVal)})
+                  <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.2 rounded font-black">
+                     Lançado ({formatCurrency(item.totalVal)})
                   </span>
                 ) : (
                   <span className="text-[10px] bg-blue-900 text-white px-1.5 py-0.2 rounded font-black animate-pulse">
@@ -409,7 +409,7 @@ export const SalesEntryForm: React.FC = () => {
                 value={totalValue}
                 onChange={(e) => setTotalValue(parseFloat(e.target.value) || 0)}
                 placeholder="0.00"
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 font-extrabold focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 font-extrabold focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -454,7 +454,7 @@ export const SalesEntryForm: React.FC = () => {
             <button
               type="button"
               onClick={addBatchRow}
-              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors"
             >
               <Plus className="w-4 h-4" /> Adicionar Linha
             </button>
@@ -531,14 +531,14 @@ export const SalesEntryForm: React.FC = () => {
                         placeholder="0.00"
                         value={row.totalValue || ''}
                         onChange={(e) => updateBatchRow(row.id, 'totalValue', parseFloat(e.target.value) || 0)}
-                        className="w-full p-1.5 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-emerald-600"
+                        className="w-full p-1.5 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-blue-600"
                       />
                     </td>
                     <td className="p-1 text-center">
                       <button
                         type="button"
                         onClick={() => removeBatchRow(row.id)}
-                        className="p-1 text-red-500 hover:text-red-700"
+                        className="p-1 text-blue-500 hover:text-blue-700"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
