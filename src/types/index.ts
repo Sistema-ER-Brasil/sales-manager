@@ -73,11 +73,12 @@ export interface Goal {
   companyId?: string; // specific CNPJ (code or id)
   marketplaceId?: string; // specific Marketplace (id or slug)
   targetName: string;
-  period: 'daily' | 'monthly';
+  period: 'daily' | 'monthly' | 'range';
   metricType?: 'revenue' | 'quantity'; // 'revenue' (R$) or 'quantity' (Volume de Pedidos/Unidades)
   targetValue: number; // Target R$ or Target Units
   targetQuantity?: number;
-  date?: string; // YYYY-MM-DD
+  date?: string; // YYYY-MM-DD (also used as the range start date)
+  endDate?: string; // YYYY-MM-DD (range end date, period === 'range')
   month?: string; // YYYY-MM
 }
 

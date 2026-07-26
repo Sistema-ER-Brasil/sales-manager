@@ -44,7 +44,8 @@ export const GoalsView: React.FC = () => {
   const [metricType, setMetricType] = useState<'revenue' | 'quantity'>('revenue');
   const [targetValueInput, setTargetValueInput] = useState<string>('5000');
   const [targetDateInput, setTargetDateInput] = useState<string>(todayStr);
-  const [period, setPeriod] = useState<'daily' | 'monthly'>('daily');
+  const [targetEndDateInput, setTargetEndDateInput] = useState<string>(todayStr);
+  const [period, setPeriod] = useState<'daily' | 'monthly' | 'range'>('daily');
   const [customTitle, setCustomTitle] = useState<string>('');
   const [showSuccessMsg, setShowSuccessMsg] = useState(false);
 
@@ -92,6 +93,9 @@ export const GoalsView: React.FC = () => {
       } else if (g.period === 'monthly') {
         const targetMonth = g.month || todayStr.substring(0, 7);
         if (!s.date.startsWith(targetMonth)) return false;
+      } else if (g.period === 'range') {
+        if (g.date && s.date < g.date) return false;
+        if (g.endDate && s.date > g.endDate) return false;
       }
 
       // Company match
@@ -148,9 +152,10 @@ export const GoalsView: React.FC = () => {
     const compLabel = selectedCompany === 'ALL' ? 'Todos CNPJs' : compObj?.code || selectedCompany;
     const mktLabel = selectedMarketplace === 'ALL' ? 'Todas Plataformas' : mktObj?.name || selectedMarketplace;
 
+    const periodLabel = period === 'daily' ? 'Diária' : period === 'monthly' ? 'Mensal' : `${formatDateBR(targetDateInput)} a ${formatDateBR(targetEndDateInput)}`;
     const autoTitle = customTitle.trim()
       ? customTitle.trim()
-      : `Meta ${period === 'daily' ? 'Diária' : 'Mensal'} ${mktLabel} (${compLabel}) - ${metricType === 'revenue' ? 'Faturamento' : 'Volume de Pedidos'}`;
+      : `Meta ${periodLabel} ${mktLabel} (${compLabel}) - ${metricType === 'revenue' ? 'Faturamento' : 'Volume de Pedidos'}`;
 
     const newGoal: Omit<Goal, 'id'> = {
       title: autoTitle,
@@ -162,7 +167,8 @@ export const GoalsView: React.FC = () => {
       period,
       metricType,
       targetValue: val,
-      date: period === 'daily' ? targetDateInput : undefined,
+      date: period === 'daily' || period === 'range' ? targetDateInput : undefined,
+      endDate: period === 'range' ? targetEndDateInput : undefined,
       month: period === 'monthly' ? targetDateInput.substring(0, 7) : undefined,
     };
 
@@ -430,25 +436,54 @@ export const GoalsView: React.FC = () => {
                 </label>
                 <select
                   value={period}
-                  onChange={(e) => setPeriod(e.target.value as 'daily' | 'monthly')}
+                  onChange={(e) => setPeriod(e.target.value as 'daily' | 'monthly' | 'range')}
                   className="w-full p-2.5 text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-slate-100"
                 >
                   <option value="daily"> Diária (Dia Específico)</option>
                   <option value="monthly"> Mensal (Mês Completo)</option>
+                  <option value="range"> Por Período (De uma data a outra)</option>
                 </select>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Data Alvo ({period === 'daily' ? 'Dia' : 'Mês'})
-                </label>
-                <input
-                  type={period === 'daily' ? 'date' : 'month'}
-                  value={targetDateInput}
-                  onChange={(e) => setTargetDateInput(e.target.value)}
-                  className="w-full p-2.5 text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-slate-100"
-                />
-              </div>
+              {period === 'range' ? (
+                <div className="sm:col-span-2 grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      De
+                    </label>
+                    <input
+                      type="date"
+                      value={targetDateInput}
+                      onChange={(e) => setTargetDateInput(e.target.value)}
+                      className="w-full p-2.5 text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-slate-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Até
+                    </label>
+                    <input
+                      type="date"
+                      value={targetEndDateInput}
+                      min={targetDateInput}
+                      onChange={(e) => setTargetEndDateInput(e.target.value)}
+                      className="w-full p-2.5 text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-slate-100"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Data Alvo ({period === 'daily' ? 'Dia' : 'Mês'})
+                  </label>
+                  <input
+                    type={period === 'daily' ? 'date' : 'month'}
+                    value={targetDateInput}
+                    onChange={(e) => setTargetDateInput(e.target.value)}
+                    className="w-full p-2.5 text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-slate-100"
+                  />
+                </div>
+              )}
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
@@ -469,7 +504,7 @@ export const GoalsView: React.FC = () => {
                   className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Cadastrar Meta Diária</span>
+                  <span>Cadastrar Meta</span>
                 </button>
               </div>
             </div>
@@ -586,7 +621,7 @@ export const GoalsView: React.FC = () => {
               <div className="flex items-center justify-between gap-2 pr-20">
                 <div className="flex flex-wrap items-center gap-1.5">
                   <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
-                    {g.period === 'daily' ? 'Diária' : 'Mensal'}
+                    {g.period === 'daily' ? 'Diária' : g.period === 'monthly' ? 'Mensal' : 'Por Período'}
                   </span>
 
                   {isQuantityMetric ? (
@@ -630,10 +665,16 @@ export const GoalsView: React.FC = () => {
                 <h3 className="font-extrabold text-sm text-slate-900 dark:text-slate-100 line-clamp-1">{g.title}</h3>
                 <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   <span>{g.targetName}</span>
-                  {g.date && (
+                  {g.period === 'range' && g.date && g.endDate ? (
                     <span className="text-[11px] font-semibold text-slate-400">
-                      ({formatDateBR(g.date)})
+                      ({formatDateBR(g.date)} a {formatDateBR(g.endDate)})
                     </span>
+                  ) : (
+                    g.date && (
+                      <span className="text-[11px] font-semibold text-slate-400">
+                        ({formatDateBR(g.date)})
+                      </span>
+                    )
                   )}
                 </div>
               </div>

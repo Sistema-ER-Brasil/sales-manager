@@ -163,6 +163,7 @@ export function rowToGoal(row: any): Goal {
     targetValue: Number(row.target_value) || 0,
     targetQuantity: row.target_quantity !== null ? Number(row.target_quantity) : undefined,
     date: row.date || undefined,
+    endDate: row.end_date || undefined,
     month: row.month || undefined,
   };
 }
@@ -181,6 +182,7 @@ export function goalToRow(g: Partial<Goal>) {
   if (g.targetValue !== undefined) row.target_value = g.targetValue;
   if (g.targetQuantity !== undefined) row.target_quantity = g.targetQuantity;
   if (g.date !== undefined) row.date = g.date;
+  if (g.endDate !== undefined) row.end_date = g.endDate;
   if (g.month !== undefined) row.month = g.month;
   return row;
 }
