@@ -291,9 +291,9 @@ export const DashboardView: React.FC = () => {
             </div>
           </div>
           <div className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-            {formatNumber(totalOrders)}
+            {formatNumber(totalQuantity)}
           </div>
-          <div className="text-[10px] text-slate-500 mt-1">Volume de vendas</div>
+          <div className="text-[10px] text-slate-500 mt-1">Unidades vendidas</div>
         </div>
 
         {/* Card 3: Ticket Médio */}
