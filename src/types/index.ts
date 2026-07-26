@@ -62,6 +62,7 @@ export interface SaleItem {
   createdByUserId: string;
   createdByName: string;
   createdAt: string; // ISO string
+  status: 'draft' | 'submitted' | 'approved';
 }
 
 export interface Goal {

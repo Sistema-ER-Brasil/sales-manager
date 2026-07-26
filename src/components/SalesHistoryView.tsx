@@ -15,6 +15,8 @@ import {
   FileText,
   X,
   Info,
+  Send,
+  CheckCircle2,
 } from 'lucide-react';
 
 export const SalesHistoryView: React.FC = () => {
@@ -33,6 +35,8 @@ export const SalesHistoryView: React.FC = () => {
     setSelectedCompanyFilter,
     updateSale,
     deleteSale,
+    submitSaleForApproval,
+    approveSale,
   } = useApp();
 
   const isAdmin = currentUser.role === 'admin';
@@ -234,18 +238,25 @@ export const SalesHistoryView: React.FC = () => {
                 <th className="p-3 text-right">Valor Total</th>
                 <th className="p-3 text-right">Valor Médio</th>
                 <th className="p-3">Lançado por</th>
+                <th className="p-3">Status</th>
                 <th className="p-3 text-center">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="p-8 text-center text-slate-500">
+                  <td colSpan={10} className="p-8 text-center text-slate-500">
                     Nenhum registro de venda encontrado para os filtros selecionados.
                   </td>
                 </tr>
               ) : (
-                filtered.map((sale) => (
+                filtered.map((sale) => {
+                  const isOwner = sale.createdByUserId === currentUser.id;
+                  const canEdit = sale.status === 'draft' && (isAdmin || isOwner);
+                  const canSubmit = sale.status === 'draft' && (isAdmin || isOwner);
+                  const canApprove = isAdmin && sale.status === 'submitted';
+
+                  return (
                   <tr key={sale.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                     <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">
                       {formatDateBR(sale.date)}
@@ -271,6 +282,19 @@ export const SalesHistoryView: React.FC = () => {
                     <td className="p-3 text-slate-600 dark:text-slate-400">
                       {sale.createdByName}
                     </td>
+                    <td className="p-3">
+                      <span
+                        className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase whitespace-nowrap ${
+                          sale.status === 'approved'
+                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
+                            : sale.status === 'submitted'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                        }`}
+                      >
+                        {sale.status === 'approved' ? 'Aprovado' : sale.status === 'submitted' ? 'Aguardando Aprovação' : 'Rascunho'}
+                      </span>
+                    </td>
                     <td className="p-3 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <button
@@ -281,13 +305,39 @@ export const SalesHistoryView: React.FC = () => {
                           <Info className="w-4 h-4" />
                         </button>
 
-                        <button
-                          onClick={() => setEditingSale(sale)}
-                          className="p-1.5 text-slate-500 hover:text-blue-900"
-                          title="Editar Registro"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
+                        {canEdit && (
+                          <button
+                            onClick={() => setEditingSale(sale)}
+                            className="p-1.5 text-slate-500 hover:text-blue-900"
+                            title="Editar Registro"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                        )}
+
+                        {canSubmit && (
+                          <button
+                            onClick={() => {
+                              if (confirm('Enviar esta venda para aprovação? Depois de enviada, não será mais possível editá-la.')) {
+                                submitSaleForApproval(sale.id);
+                              }
+                            }}
+                            className="p-1.5 text-slate-500 hover:text-blue-600"
+                            title="Enviar para Aprovação"
+                          >
+                            <Send className="w-4 h-4" />
+                          </button>
+                        )}
+
+                        {canApprove && (
+                          <button
+                            onClick={() => approveSale(sale.id)}
+                            className="p-1.5 text-slate-500 hover:text-blue-600"
+                            title="Aprovar Venda"
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                          </button>
+                        )}
 
                         {isAdmin && (
                           <button
@@ -305,7 +355,8 @@ export const SalesHistoryView: React.FC = () => {
                       </div>
                     </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>

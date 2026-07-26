@@ -80,10 +80,12 @@ interface AppContextType {
   setSelectedCompanyFilter: (id: string) => void;
 
   // Actions
-  addSale: (sale: Omit<SaleItem, 'id' | 'createdAt' | 'createdByUserId' | 'createdByName'>) => void;
-  addSalesBatch: (items: Array<Omit<SaleItem, 'id' | 'createdAt' | 'createdByUserId' | 'createdByName'>>) => void;
+  addSale: (sale: Omit<SaleItem, 'id' | 'createdAt' | 'createdByUserId' | 'createdByName' | 'status'>) => void;
+  addSalesBatch: (items: Array<Omit<SaleItem, 'id' | 'createdAt' | 'createdByUserId' | 'createdByName' | 'status'>>) => void;
   updateSale: (sale: SaleItem) => void;
   deleteSale: (id: string) => void;
+  submitSaleForApproval: (id: string) => void;
+  approveSale: (id: string) => void;
 
   addProduct: (product: Omit<Product, 'id' | 'createdAt'>) => void;
   updateProduct: (product: Product) => void;
@@ -384,7 +386,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     })();
   };
 
-  const addSale = (saleData: Omit<SaleItem, 'id' | 'createdAt' | 'createdByUserId' | 'createdByName'>) => {
+  const addSale = (saleData: Omit<SaleItem, 'id' | 'createdAt' | 'createdByUserId' | 'createdByName' | 'status'>) => {
     const id = `sale_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const newSale: SaleItem = {
       ...saleData,
@@ -392,6 +394,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       createdByUserId: currentUser.id,
       createdByName: currentUser.name,
       createdAt: new Date().toISOString(),
+      status: 'draft',
     };
 
     setSales((prev) => [newSale, ...prev]);
@@ -421,7 +424,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     })();
   };
 
-  const addSalesBatch = (items: Array<Omit<SaleItem, 'id' | 'createdAt' | 'createdByUserId' | 'createdByName'>>) => {
+  const addSalesBatch = (items: Array<Omit<SaleItem, 'id' | 'createdAt' | 'createdByUserId' | 'createdByName' | 'status'>>) => {
     const now = new Date().toISOString();
     const newItems: SaleItem[] = items.map((saleData, idx) => ({
       ...saleData,
@@ -429,6 +432,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       createdByUserId: currentUser.id,
       createdByName: currentUser.name,
       createdAt: now,
+      status: 'draft',
     }));
 
     setSales((prev) => [...newItems, ...prev]);
@@ -471,6 +475,40 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     (async () => {
       const { error } = await supabase.from('sales').delete().eq('id', id);
       if (error) console.error('Erro ao excluir venda:', error.message);
+    })();
+  };
+
+  const submitSaleForApproval = (id: string) => {
+    const target = sales.find((s) => s.id === id);
+    if (!target) return;
+    setSales((prev) => prev.map((s) => (s.id === id ? { ...s, status: 'submitted' } : s)));
+    addAuditLog('UPDATE', 'sales', `Venda ${id} (${target.productName}) enviada para aprovação por ${currentUser.name}`);
+
+    const newNotif: NotificationItem = {
+      id: `notif_${Date.now()}`,
+      type: 'sale',
+      title: 'Venda Aguardando Aprovação',
+      message: `${currentUser.name} enviou uma venda de R$ ${target.totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (${target.marketplaceId.toUpperCase()}) para aprovação.`,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
+    setNotifications((prev) => [newNotif, ...prev]);
+
+    (async () => {
+      const { error } = await supabase.from('sales').update({ status: 'submitted' }).eq('id', id);
+      if (error) console.error('Erro ao enviar venda para aprovação:', error.message);
+      await supabase.from('notifications').insert(notificationToRow(newNotif));
+    })();
+  };
+
+  const approveSale = (id: string) => {
+    const target = sales.find((s) => s.id === id);
+    if (!target) return;
+    setSales((prev) => prev.map((s) => (s.id === id ? { ...s, status: 'approved' } : s)));
+    addAuditLog('UPDATE', 'sales', `Venda ${id} (${target.productName}) aprovada por ${currentUser.name}`);
+    (async () => {
+      const { error } = await supabase.from('sales').update({ status: 'approved' }).eq('id', id);
+      if (error) console.error('Erro ao aprovar venda:', error.message);
     })();
   };
 
@@ -734,6 +772,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       createdByUserId: currentUser.id,
       createdByName: currentUser.name,
       createdAt: new Date().toISOString(),
+      status: 'draft' as const,
     }));
 
     setSales((prev) => [...formatted, ...prev]);
@@ -797,6 +836,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addSalesBatch,
         updateSale,
         deleteSale,
+        submitSaleForApproval,
+        approveSale,
         addProduct,
         updateProduct,
         deleteProduct,

@@ -125,6 +125,7 @@ export function rowToSale(row: any): SaleItem {
     createdByUserId: row.created_by_user_id,
     createdByName: row.created_by_name,
     createdAt: row.created_at,
+    status: row.status || 'draft',
   };
 }
 
@@ -144,6 +145,7 @@ export function saleToRow(s: Partial<SaleItem>) {
   if (s.createdByUserId !== undefined) row.created_by_user_id = s.createdByUserId;
   if (s.createdByName !== undefined) row.created_by_name = s.createdByName;
   if (s.createdAt !== undefined) row.created_at = s.createdAt;
+  if (s.status !== undefined) row.status = s.status;
   return row;
 }
 

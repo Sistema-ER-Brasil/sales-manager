@@ -238,6 +238,7 @@ function generateInitialSales(): SaleItem[] {
       createdByUserId: 'usr_admin',
       createdByName: e.user,
       createdAt: `${today}T${String(8 + (count % 10)).padStart(2, '0')}:30:00.000Z`,
+      status: 'approved',
     });
   });
 
@@ -262,6 +263,7 @@ function generateInitialSales(): SaleItem[] {
           createdByUserId: 'usr_admin',
           createdByName: 'Administrador Geral',
           createdAt: `${dateStr}T14:20:00.000Z`,
+          status: 'approved',
         });
       });
     });
