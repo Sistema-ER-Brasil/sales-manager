@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getTodayString, formatCurrency } from '../utils/formatters';
-import { PlusCircle, Save, CheckCircle2, ShoppingBag, Layers, AlertCircle, Plus, Trash2, Clock, Store, AlertTriangle, X } from 'lucide-react';
+import { PlusCircle, Save, CheckCircle2, ShoppingBag, Layers, AlertCircle, Plus, Trash2, Clock, Store, X } from 'lucide-react';
 
 export const SalesEntryForm: React.FC = () => {
   const { currentUser, marketplaces, companies, sales, addSale, addSalesBatch } = useApp();
@@ -182,78 +182,66 @@ export const SalesEntryForm: React.FC = () => {
       )}
 
       {/* Daily Filling Status Banner for User */}
-      <div
-        className={`border rounded-2xl p-4 shadow-2xs space-y-3 transition-all ${
-          isFullyFilled
-            ? 'bg-blue-50/70 dark:bg-blue-950/30 border-blue-300 dark:border-blue-800'
-            : 'bg-blue-50/70 dark:bg-blue-950/30 border-blue-300 dark:border-blue-950'
-        }`}
-      >
-        <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-2xs space-y-3 bg-white dark:bg-slate-900">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div
-              className={`p-2 rounded-xl text-white ${
-                isFullyFilled ? 'bg-blue-600' : 'bg-blue-900 animate-pulse'
-              }`}
-            >
-              {isFullyFilled ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
+            <div className={`p-2 rounded-xl text-white ${isFullyFilled ? 'bg-blue-600' : 'bg-blue-900'}`}>
+              {isFullyFilled ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-slate-100">
-                  Status de Preenchimento Diário ({currentUser.name})
-                </h3>
-                <span
-                  className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase ${
-                    isFullyFilled
-                      ? 'bg-blue-200 text-blue-900 dark:bg-blue-900 dark:text-blue-100'
-                      : 'bg-blue-200 text-blue-950 dark:bg-blue-950 dark:text-blue-100 animate-pulse'
-                  }`}
-                >
-                  {isFullyFilled ? ' 100% Preenchido' : ` ${pendingMarketplaces.length} Pendente(s)`}
-                </span>
-              </div>
-              <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
+              <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                Status de Hoje
+              </h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {isFullyFilled
-                  ? 'Parabéns! Suas vendas de hoje foram lançadas com sucesso para todos os seus canais.'
-                  : `Atenção: Você ainda não preencheu a venda de hoje (${todayStr}) para o(s) marketplace(s) sob sua responsabilidade.`}
+                  ? 'Todos os canais lançados. Bom trabalho!'
+                  : `${marketplaceFillingStatus.length - pendingMarketplaces.length} de ${marketplaceFillingStatus.length} canais lançados hoje`}
               </p>
             </div>
           </div>
 
-          <span className="text-[11px] font-bold text-slate-500">Data de Análise: {todayStr}</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 w-32">
+              <div className="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${isFullyFilled ? 'bg-blue-600' : 'bg-blue-900'}`}
+                  style={{
+                    width: `${marketplaceFillingStatus.length > 0 ? ((marketplaceFillingStatus.length - pendingMarketplaces.length) / marketplaceFillingStatus.length) * 100 : 0}%`,
+                  }}
+                />
+              </div>
+              <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 tabular-nums">
+                {marketplaceFillingStatus.length - pendingMarketplaces.length}/{marketplaceFillingStatus.length}
+              </span>
+            </div>
+            <span className="text-[11px] font-semibold text-slate-400 hidden sm:inline">{todayStr}</span>
+          </div>
         </div>
 
-        {/* Chips of assigned marketplaces */}
-        <div className="flex flex-wrap gap-2 pt-1 border-t border-slate-200/60 dark:border-slate-800">
-          <span className="text-[10px] font-extrabold uppercase text-slate-500 self-center mr-1">
-            Seus Canais Designados:
-          </span>
+        {/* Compact channel grid */}
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
           {marketplaceFillingStatus.map((item) => {
             const m = item.marketplace;
             return (
               <button
                 key={m.id}
                 type="button"
-                onClick={() => {
-                  setMarketplaceId(m.id);
-                }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs ${
+                onClick={() => setMarketplaceId(m.id)}
+                title={item.isFilled ? `${m.name} — lançado (${formatCurrency(item.totalVal)})` : `${m.name} — pendente`}
+                className={`relative px-2.5 py-2 rounded-xl text-[11px] font-bold text-left transition-all border ${
                   item.isFilled
-                    ? 'bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border-blue-300 hover:bg-blue-200'
-                    : 'bg-white dark:bg-slate-900 text-blue-950 dark:text-blue-300 border-blue-400 hover:bg-blue-100/80'
+                    ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-200 border-blue-200 dark:border-blue-900 hover:bg-blue-100'
+                    : 'bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
                 }`}
               >
-                <span>{m.name}</span>
-                {item.isFilled ? (
-                  <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.2 rounded font-black">
-                     Lançado ({formatCurrency(item.totalVal)})
-                  </span>
-                ) : (
-                  <span className="text-[10px] bg-blue-900 text-white px-1.5 py-0.2 rounded font-black animate-pulse">
-                    ⏱ Falta Preencher
-                  </span>
-                )}
+                <span className="block truncate pr-4">{m.name}</span>
+                <span
+                  className={`absolute top-1.5 right-1.5 w-3.5 h-3.5 rounded-full flex items-center justify-center ${
+                    item.isFilled ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'
+                  }`}
+                >
+                  {item.isFilled && <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />}
+                </span>
               </button>
             );
           })}
