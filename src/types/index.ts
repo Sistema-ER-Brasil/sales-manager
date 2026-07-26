@@ -117,6 +117,15 @@ export interface Task {
   createdAt: string;
 }
 
+export interface TaskComment {
+  id: string;
+  taskId: string;
+  userId: string;
+  userName: string;
+  comment: string;
+  createdAt: string;
+}
+
 export interface SystemSettings {
   theme: 'light' | 'dark';
   companyName: string;

@@ -9,6 +9,7 @@ import {
   AuditLog,
   SystemSettings,
   Task,
+  TaskComment,
 } from '../types';
 
 // ---- Supabase row shapes (snake_case) <-> app types (camelCase) ----
@@ -287,5 +288,27 @@ export function taskToRow(t: Partial<Task>) {
   if (t.priority !== undefined) row.priority = t.priority;
   if (t.dueDate !== undefined) row.due_date = t.dueDate;
   if (t.createdAt !== undefined) row.created_at = t.createdAt;
+  return row;
+}
+
+export function rowToTaskComment(row: any): TaskComment {
+  return {
+    id: row.id,
+    taskId: row.task_id,
+    userId: row.user_id,
+    userName: row.user_name,
+    comment: row.comment,
+    createdAt: row.created_at,
+  };
+}
+
+export function taskCommentToRow(c: Partial<TaskComment>) {
+  const row: any = {};
+  if (c.id !== undefined) row.id = c.id;
+  if (c.taskId !== undefined) row.task_id = c.taskId;
+  if (c.userId !== undefined) row.user_id = c.userId;
+  if (c.userName !== undefined) row.user_name = c.userName;
+  if (c.comment !== undefined) row.comment = c.comment;
+  if (c.createdAt !== undefined) row.created_at = c.createdAt;
   return row;
 }
