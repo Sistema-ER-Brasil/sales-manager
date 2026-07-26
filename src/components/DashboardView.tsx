@@ -49,6 +49,7 @@ export const DashboardView: React.FC = () => {
     companies,
     marketplaces,
     users,
+    goals,
     setActiveTab,
     periodFilter,
     setPeriodFilter,
@@ -74,13 +75,12 @@ export const DashboardView: React.FC = () => {
   );
 
   // Today sales
-  const todaySales = sales.filter((s) => s.date === getTodayString());
+  const todayStr = getTodayString();
+  const todaySales = sales.filter((s) => s.date === todayStr);
 
   // Metrics
   const totalRevenue = filteredSales.reduce((acc, s) => acc + s.totalValue, 0);
   const totalQuantity = filteredSales.reduce((acc, s) => acc + s.quantity, 0);
-  const totalOrders = filteredSales.length;
-  const avgTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
   const estimatedProfit = totalRevenue * 0.28; // Estimated ~28% margin
 
   // Yesterday comparison for green/red badges
@@ -89,6 +89,37 @@ export const DashboardView: React.FC = () => {
   const yesterdayRevenue = yesterdaySales.reduce((acc, s) => acc + s.totalValue, 0);
   const todayRevenue = todaySales.reduce((acc, s) => acc + s.totalValue, 0);
   const revGrowth = yesterdayRevenue > 0 ? ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100 : 0;
+
+  // Best performing channel today
+  const revenueByMarketplaceToday = new Map<string, number>();
+  todaySales.forEach((s) => {
+    revenueByMarketplaceToday.set(s.marketplaceId, (revenueByMarketplaceToday.get(s.marketplaceId) || 0) + s.totalValue);
+  });
+  let topChannelToday: { name: string; value: number } | null = null;
+  revenueByMarketplaceToday.forEach((value, marketplaceId) => {
+    if (!topChannelToday || value > topChannelToday.value) {
+      const mObj = marketplaces.find((m) => m.id === marketplaceId || m.slug === marketplaceId);
+      topChannelToday = { name: mObj ? mObj.name : marketplaceId, value };
+    }
+  });
+
+  // Today's daily revenue goal progress (aggregated across all daily revenue goals for today)
+  const todaysRevenueGoals = goals.filter(
+    (g) => g.period === 'daily' && g.metricType !== 'quantity' && (g.date === todayStr || !g.date)
+  );
+  const goalProgress = todaysRevenueGoals.reduce(
+    (acc, g) => {
+      const matchingSales = todaySales.filter((s) => {
+        if (g.companyId && g.companyId !== 'ALL' && s.companyId !== g.companyId) return false;
+        if (g.marketplaceId && g.marketplaceId !== 'ALL' && s.marketplaceId !== g.marketplaceId && s.marketplaceId !== g.targetName) return false;
+        return true;
+      });
+      const achieved = matchingSales.reduce((sum, s) => sum + s.totalValue, 0);
+      return { achieved: acc.achieved + achieved, target: acc.target + g.targetValue };
+    },
+    { achieved: 0, target: 0 }
+  );
+  const goalProgressPercent = goalProgress.target > 0 ? Math.min(100, (goalProgress.achieved / goalProgress.target) * 100) : 0;
 
   // Breakdown by CNPJ
   const cnpjMetrics = companies.map((c) => {
@@ -296,38 +327,60 @@ export const DashboardView: React.FC = () => {
           <div className="text-[10px] text-slate-500 mt-1">Unidades vendidas</div>
         </div>
 
-        {/* Card 3: Ticket Médio */}
+        {/* Card 3: Melhor Canal do Dia */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-2xs">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Ticket Médio
+              Melhor Canal do Dia
             </span>
             <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-900 dark:text-blue-400">
               <CreditCard className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-            {formatCurrency(avgTicket)}
-          </div>
-          <div className="text-[10px] text-slate-500 mt-1">Por pedido</div>
+          {topChannelToday ? (
+            <>
+              <div className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white truncate">
+                {topChannelToday.name}
+              </div>
+              <div className="text-[10px] text-slate-500 mt-1">{formatCurrency(topChannelToday.value)} hoje</div>
+            </>
+          ) : (
+            <>
+              <div className="text-base sm:text-lg font-bold tracking-tight text-slate-400 dark:text-slate-600">
+                —
+              </div>
+              <div className="text-[10px] text-slate-500 mt-1">Nenhuma venda hoje ainda</div>
+            </>
+          )}
         </div>
 
-        {/* Card 4: Receita Bruta */}
+        {/* Card 4: Progresso da Meta do Dia */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-2xs">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Receita
+              Progresso da Meta do Dia
             </span>
             <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
               <TrendingUp className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-            {formatCurrency(totalRevenue)}
-          </div>
-          <div className="text-[10px] text-blue-600 dark:text-blue-400 mt-1 font-semibold">
-            100% faturado
-          </div>
+          {todaysRevenueGoals.length > 0 ? (
+            <>
+              <div className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                {goalProgressPercent.toFixed(0)}%
+              </div>
+              <div className="text-[10px] text-slate-500 mt-1">
+                {formatCurrency(goalProgress.achieved)} de {formatCurrency(goalProgress.target)}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-base sm:text-lg font-bold tracking-tight text-slate-400 dark:text-slate-600">
+                —
+              </div>
+              <div className="text-[10px] text-slate-500 mt-1">Nenhuma meta definida para hoje</div>
+            </>
+          )}
         </div>
       </div>
 
