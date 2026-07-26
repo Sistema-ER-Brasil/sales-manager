@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Settings, Volume2, VolumeX, Database, Key, Trash2, RotateCcw, ShieldCheck, LogOut } from 'lucide-react';
+import { Settings, Volume2, VolumeX, Database, Key, Trash2, RotateCcw, ShieldCheck, LogOut, Camera, Loader2, KeyRound, Check } from 'lucide-react';
+import { uploadLogoImage } from '../lib/upload';
+import { ChangePasswordModal } from './ChangePasswordModal';
 
 export const SettingsView: React.FC = () => {
-  const { settings, updateSettings, currentUser, sales, clearSampleData, restoreSampleData, logout } = useApp();
+  const { settings, updateSettings, currentUser, updateUser, getAccessToken, sales, clearSampleData, restoreSampleData, logout } = useApp();
+  const isAdmin = currentUser.role === 'admin';
   const [showConfirmClear, setShowConfirmClear] = useState(false);
   const [showConfirmRestore, setShowConfirmRestore] = useState(false);
   const [dataActionMessage, setDataActionMessage] = useState('');
+
+  // Self-service profile state (non-admin view)
+  const [profileName, setProfileName] = useState(currentUser.name);
+  const [nameSaving, setNameSaving] = useState(false);
+  const [nameSavedMsg, setNameSavedMsg] = useState('');
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState('');
+  const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
 
   const handleClear = () => {
     clearSampleData();
@@ -21,6 +32,119 @@ export const SettingsView: React.FC = () => {
     setDataActionMessage('Dados de demonstração restaurados.');
     setTimeout(() => setDataActionMessage(''), 4000);
   };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setAvatarUploading(true);
+    setAvatarError('');
+    const result = await uploadLogoImage(file, `avatars/${currentUser.id}`, getAccessToken);
+    setAvatarUploading(false);
+    if (result.error) {
+      setAvatarError(result.error);
+      return;
+    }
+    await updateUser({ ...currentUser, avatar: result.url });
+  };
+
+  const handleSaveName = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profileName.trim() || profileName.trim() === currentUser.name) return;
+    setNameSaving(true);
+    const result = await updateUser({ ...currentUser, name: profileName.trim() });
+    setNameSaving(false);
+    if (result.success) {
+      setNameSavedMsg('Nome atualizado!');
+      setTimeout(() => setNameSavedMsg(''), 3000);
+    }
+  };
+
+  if (!isAdmin) {
+    return (
+      <div className="p-4 sm:p-6 max-w-2xl mx-auto space-y-6">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex items-center gap-2">
+          <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide">
+            Meu Perfil
+          </h2>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-6">
+          {/* Avatar */}
+          <div className="flex items-center gap-4">
+            {currentUser.avatar ? (
+              <img src={currentUser.avatar} alt={currentUser.name} className="w-16 h-16 rounded-full object-cover border border-slate-200 dark:border-slate-700" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold">
+                {currentUser.name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div>
+              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800">
+                {avatarUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                <span>{avatarUploading ? 'Enviando...' : 'Trocar Foto'}</span>
+                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={avatarUploading} />
+              </label>
+              {avatarError && <p className="text-blue-600 text-[11px] font-semibold mt-1">{avatarError}</p>}
+            </div>
+          </div>
+
+          {/* Name */}
+          <form onSubmit={handleSaveName} className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">Nome Completo</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={profileName}
+                onChange={(e) => setProfileName(e.target.value)}
+                className="flex-1 p-2 text-xs border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+              />
+              <button
+                type="submit"
+                disabled={nameSaving || !profileName.trim() || profileName.trim() === currentUser.name}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs rounded-xl transition-colors"
+              >
+                {nameSaving ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+            {nameSavedMsg && (
+              <p className="text-blue-600 dark:text-blue-400 text-[11px] font-bold flex items-center gap-1">
+                <Check className="w-3.5 h-3.5" /> {nameSavedMsg}
+              </p>
+            )}
+            <p className="text-[11px] text-slate-400">{currentUser.email}</p>
+          </form>
+
+          {/* Password */}
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <button
+              onClick={() => setChangePasswordModalOpen(true)}
+              className="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors"
+            >
+              <KeyRound className="w-3.5 h-3.5" /> Alterar Minha Senha
+            </button>
+          </div>
+
+          {/* Logout */}
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <button
+              onClick={logout}
+              className="px-3.5 py-2 bg-blue-950 hover:bg-blue-900 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" /> Sair do Sistema
+            </button>
+          </div>
+        </div>
+
+        <ChangePasswordModal
+          isOpen={changePasswordModalOpen}
+          onClose={() => setChangePasswordModalOpen(false)}
+          targetUser={null}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-6">
