@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { filterSalesByPeriodAndFilters } from '../utils/filterUtils';
+import { filterSalesByPeriodAndFilters, getPeriodDateRange } from '../utils/filterUtils';
 import { formatCurrency, formatNumber, formatDateBR } from '../utils/formatters';
 import { exportToExcel, exportSalesToPDF, exportToCSV, exportMatrixToJpeg } from '../utils/exportUtils';
 import { BarChart3, FileSpreadsheet, FileText, Image as ImageIcon, Building2, ShoppingBag, Package, User, Table as TableIcon, Download, Loader2 } from 'lucide-react';
@@ -45,17 +45,9 @@ export const ReportsView: React.FC = () => {
   const matrixTotalQty = matrixData.reduce((acc, r) => acc + r.totalQty, 0);
   const matrixTotalRev = matrixData.reduce((acc, r) => acc + r.totalVal, 0);
 
-  const periodTextMap: Record<string, string> = {
-    TODAY: 'Hoje',
-    YESTERDAY: 'Ontem',
-    THIS_WEEK: 'Esta Semana',
-    LAST_WEEK: 'Semana Passada',
-    THIS_MONTH: 'Este Mês',
-    LAST_MONTH: 'Mês Passado',
-    THIS_YEAR: 'Este Ano',
-    CUSTOM: `Período (${formatDateBR(dateRange.start)} até ${formatDateBR(dateRange.end)})`,
-  };
-  const currentPeriodLabel = periodTextMap[periodFilter] || periodFilter;
+  const { start: periodStart, end: periodEnd } = getPeriodDateRange(periodFilter, dateRange);
+  const currentPeriodLabel =
+    periodStart === periodEnd ? formatDateBR(periodStart) : `${formatDateBR(periodStart)} até ${formatDateBR(periodEnd)}`;
 
   const handleExportMatrixJpeg = async () => {
     setIsExportingJpg(true);
@@ -231,12 +223,33 @@ export const ReportsView: React.FC = () => {
             <option value="today">Hoje</option>
             <option value="yesterday">Ontem</option>
             <option value="this_week">Esta Semana</option>
+            <option value="weekend">Fim de Semana (Sex a Dom)</option>
             <option value="last_7_days">Últimos 7 dias</option>
             <option value="last_30_days">Últimos 30 dias</option>
             <option value="this_month">Este Mês</option>
             <option value="this_year">Ano</option>
+            <option value="custom">Personalizado</option>
           </select>
         </div>
+
+        {/* Custom Date Range Picker */}
+        {periodFilter === 'custom' && (
+          <div className="flex items-center gap-1.5 pt-1">
+            <input
+              type="date"
+              value={dateRange.startDate}
+              onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+              className="px-2 py-1 text-[11px] rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+            />
+            <span className="text-[10px] text-slate-400">até</span>
+            <input
+              type="date"
+              value={dateRange.endDate}
+              onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+              className="px-2 py-1 text-[11px] rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+            />
+          </div>
+        )}
       </div>
 
       {/* REPORT TABLE */}

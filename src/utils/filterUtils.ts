@@ -1,6 +1,67 @@
 import { SaleItem, PeriodFilter, DateRange } from '../types';
 import { getTodayString } from './formatters';
 
+// Concrete start/end (YYYY-MM-DD) that a given period filter resolves to "right now".
+// Mirrors the boundaries used inside filterSalesByPeriodAndFilters below.
+export function getPeriodDateRange(period: PeriodFilter, dateRange: DateRange): { start: string; end: string } {
+  const today = getTodayString();
+  const now = new Date();
+
+  if (period === 'today') return { start: today, end: today };
+
+  if (period === 'yesterday') {
+    const yDate = new Date(now);
+    yDate.setDate(yDate.getDate() - 1);
+    const yStr = yDate.toISOString().split('T')[0];
+    return { start: yStr, end: yStr };
+  }
+
+  if (period === 'this_week') {
+    const curr = new Date(now);
+    const first = curr.getDate() - curr.getDay();
+    const monday = new Date(curr.setDate(first + 1)).toISOString().split('T')[0];
+    return { start: monday, end: today };
+  }
+
+  if (period === 'weekend') {
+    const day = now.getDay();
+    const isoDay = day === 0 ? 7 : day;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - isoDay + 1);
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    return { start: friday.toISOString().split('T')[0], end: sunday.toISOString().split('T')[0] };
+  }
+
+  if (period === 'last_7_days') {
+    const d = new Date(now);
+    d.setDate(d.getDate() - 6);
+    return { start: d.toISOString().split('T')[0], end: today };
+  }
+
+  if (period === 'last_30_days') {
+    const d = new Date(now);
+    d.setDate(d.getDate() - 29);
+    return { start: d.toISOString().split('T')[0], end: today };
+  }
+
+  if (period === 'this_month') {
+    const [y, m] = today.substring(0, 7).split('-').map(Number);
+    const lastDay = new Date(y, m, 0).getDate();
+    return { start: `${today.substring(0, 7)}-01`, end: `${today.substring(0, 7)}-${String(lastDay).padStart(2, '0')}` };
+  }
+
+  if (period === 'this_year') {
+    const year = today.substring(0, 4);
+    return { start: `${year}-01-01`, end: `${year}-12-31` };
+  }
+
+  // custom
+  return { start: dateRange.startDate || today, end: dateRange.endDate || today };
+}
+
 export function filterSalesByPeriodAndFilters(
   sales: SaleItem[],
   period: PeriodFilter,
@@ -42,6 +103,20 @@ export function filterSalesByPeriodAndFilters(
       const first = curr.getDate() - curr.getDay(); // Sunday
       const monday = new Date(curr.setDate(first + 1)).toISOString().split('T')[0];
       return saleDateStr >= monday && saleDateStr <= today;
+    }
+
+    if (period === 'weekend') {
+      const day = now.getDay(); // 0=Dom, 1=Seg, ..., 6=Sáb
+      const isoDay = day === 0 ? 7 : day; // 1=Seg ... 7=Dom
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - isoDay + 1);
+      const friday = new Date(monday);
+      friday.setDate(monday.getDate() + 4);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      const fridayStr = friday.toISOString().split('T')[0];
+      const sundayStr = sunday.toISOString().split('T')[0];
+      return saleDateStr >= fridayStr && saleDateStr <= sundayStr;
     }
 
     if (period === 'last_7_days') {

@@ -143,10 +143,11 @@ export interface SystemSettings {
   soundEffectsEnabled: boolean;
 }
 
-export type PeriodFilter = 
+export type PeriodFilter =
   | 'today'
   | 'yesterday'
   | 'this_week'
+  | 'weekend'
   | 'last_7_days'
   | 'last_30_days'
   | 'this_month'
