@@ -1,4 +1,4 @@
-import { requireAdmin, supabaseAdmin } from "../_lib/adminAuth";
+import { requireAdmin, supabaseAdmin } from "../_lib/adminAuth.js";
 
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
