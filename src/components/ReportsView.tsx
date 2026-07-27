@@ -246,8 +246,8 @@ export const ReportsView: React.FC = () => {
             <thead>
               <tr className="bg-slate-900 text-white font-bold uppercase text-[11px]">
                 <th className="p-3">Agrupamento ({groupBy.toUpperCase()})</th>
-                <th className="p-3 text-center">Pedidos Total</th>
-                <th className="p-3 text-center">Itens Físicos</th>
+                <th className="p-3 text-center">Lançado</th>
+                <th className="p-3 text-center">Número de Pedidos</th>
                 <th className="p-3 text-right">Faturamento Total (R$)</th>
                 <th className="p-3 text-right">Ticket Médio (R$)</th>
               </tr>
