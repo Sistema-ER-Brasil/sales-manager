@@ -80,7 +80,7 @@ export const DashboardView: React.FC = () => {
 
   // Metrics
   const totalRevenue = filteredSales.reduce((acc, s) => acc + s.totalValue, 0);
-  const totalQuantity = filteredSales.reduce((acc, s) => acc + s.quantity, 0);
+  const totalOrders = filteredSales.length;
   const estimatedProfit = totalRevenue * 0.28; // Estimated ~28% margin
 
   // Yesterday comparison for green/red badges
@@ -322,9 +322,9 @@ export const DashboardView: React.FC = () => {
             </div>
           </div>
           <div className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-            {formatNumber(totalQuantity)}
+            {formatNumber(totalOrders)}
           </div>
-          <div className="text-[10px] text-slate-500 mt-1">Unidades vendidas</div>
+          <div className="text-[10px] text-slate-500 mt-1">Vendas lançadas no período</div>
         </div>
 
         {/* Card 3: Melhor Canal do Dia */}
