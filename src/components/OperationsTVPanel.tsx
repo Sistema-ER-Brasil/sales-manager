@@ -47,8 +47,8 @@ export const OperationsTVPanel: React.FC = () => {
   const todaySales = sales.filter((s) => s.date === todayStr);
 
   const todayRevenue = todaySales.reduce((acc, s) => acc + s.totalValue, 0);
-  const todayOrders = todaySales.length;
-  const todayQuantity = todaySales.reduce((acc, s) => acc + s.quantity, 0);
+  const todayOrders = todaySales.reduce((acc, s) => acc + s.quantity, 0);
+  const todayQuantity = todayOrders;
   const todayAvgTicket = todayOrders > 0 ? todayRevenue / todayOrders : 0;
 
   // Daily Goal (Target R$ 12.000 or total from goals)
@@ -64,7 +64,7 @@ export const OperationsTVPanel: React.FC = () => {
     return {
       code: c.code,
       name: c.name,
-      orders: cSales.length,
+      orders: qty,
       val,
       qty,
       badgeColor: c.badgeColor,
@@ -76,7 +76,7 @@ export const OperationsTVPanel: React.FC = () => {
     .map((m) => {
       const mSales = todaySales.filter((s) => s.marketplaceId === m.id);
       const val = mSales.reduce((acc, s) => acc + s.totalValue, 0);
-      const orders = mSales.length;
+      const orders = mSales.reduce((acc, s) => acc + s.quantity, 0);
       return {
         id: m.id,
         name: m.name,

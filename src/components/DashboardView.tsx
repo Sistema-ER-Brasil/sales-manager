@@ -80,7 +80,7 @@ export const DashboardView: React.FC = () => {
 
   // Metrics
   const totalRevenue = filteredSales.reduce((acc, s) => acc + s.totalValue, 0);
-  const totalOrders = filteredSales.length;
+  const totalOrders = filteredSales.reduce((acc, s) => acc + s.quantity, 0);
   const estimatedProfit = totalRevenue * 0.28; // Estimated ~28% margin
 
   // Yesterday comparison for green/red badges
@@ -88,6 +88,7 @@ export const DashboardView: React.FC = () => {
   const yesterdaySales = sales.filter((s) => s.date === yesterdayStr);
   const yesterdayRevenue = yesterdaySales.reduce((acc, s) => acc + s.totalValue, 0);
   const todayRevenue = todaySales.reduce((acc, s) => acc + s.totalValue, 0);
+  const todayOrders = todaySales.reduce((acc, s) => acc + s.quantity, 0);
   const revGrowth = yesterdayRevenue > 0 ? ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100 : 0;
 
   // Best performing channel today
@@ -125,8 +126,8 @@ export const DashboardView: React.FC = () => {
   const cnpjMetrics = companies.map((c) => {
     const cSales = filteredSales.filter((s) => s.companyId === c.code || s.companyId === c.id);
     const val = cSales.reduce((acc, s) => acc + s.totalValue, 0);
-    const orders = cSales.length;
     const qty = cSales.reduce((acc, s) => acc + s.quantity, 0);
+    const orders = qty;
     const ticket = orders > 0 ? val / orders : 0;
     return {
       code: c.code,
@@ -175,8 +176,8 @@ export const DashboardView: React.FC = () => {
         body: JSON.stringify({
           metrics: {
             todayRevenue,
-            todayOrders: todaySales.length,
-            todayTicket: todaySales.length > 0 ? todayRevenue / todaySales.length : 0,
+            todayOrders,
+            todayTicket: todayOrders > 0 ? todayRevenue / todayOrders : 0,
             cnpjBreakdown: cnpjMetrics.map((c) => ({ code: c.code, val: c.value })),
             marketplaceBreakdown: marketplaceChartData,
           },
@@ -324,7 +325,7 @@ export const DashboardView: React.FC = () => {
           <div className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">
             {formatNumber(totalOrders)}
           </div>
-          <div className="text-[10px] text-slate-500 mt-1">Vendas lançadas no período</div>
+          <div className="text-[10px] text-slate-500 mt-1">Pedidos no período</div>
         </div>
 
         {/* Card 3: Melhor Canal do Dia */}

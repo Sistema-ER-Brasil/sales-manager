@@ -83,7 +83,7 @@ export const ReportsView: React.FC = () => {
       const mSales = filteredSales.filter((s) => s.marketplaceId === m.id);
       const revenue = mSales.reduce((acc, s) => acc + s.totalValue, 0);
       const quantity = mSales.reduce((acc, s) => acc + s.quantity, 0);
-      const orders = mSales.length;
+      const orders = quantity;
       return {
         name: m.name,
         orders,
@@ -97,7 +97,7 @@ export const ReportsView: React.FC = () => {
       const cSales = filteredSales.filter((s) => s.companyId === c.code || s.companyId === c.id);
       const revenue = cSales.reduce((acc, s) => acc + s.totalValue, 0);
       const quantity = cSales.reduce((acc, s) => acc + s.quantity, 0);
-      const orders = cSales.length;
+      const orders = quantity;
       return {
         name: `CNPJ ${c.code} (${c.name})`,
         orders,
@@ -111,7 +111,7 @@ export const ReportsView: React.FC = () => {
     filteredSales.forEach((s) => {
       const key = s.productName || 'Outros';
       if (!prodMap[key]) prodMap[key] = { name: key, orders: 0, quantity: 0, revenue: 0 };
-      prodMap[key].orders += 1;
+      prodMap[key].orders += s.quantity;
       prodMap[key].quantity += s.quantity;
       prodMap[key].revenue += s.totalValue;
     });
@@ -125,7 +125,7 @@ export const ReportsView: React.FC = () => {
       const uSales = filteredSales.filter((s) => s.createdByUserId === u.id || s.createdByName === u.name);
       const revenue = uSales.reduce((acc, s) => acc + s.totalValue, 0);
       const quantity = uSales.reduce((acc, s) => acc + s.quantity, 0);
-      const orders = uSales.length;
+      const orders = quantity;
       return {
         name: `${u.name} (${u.role})`,
         orders,

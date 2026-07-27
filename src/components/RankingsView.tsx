@@ -27,7 +27,7 @@ export const RankingsView: React.FC = () => {
     if (!map[key]) map[key] = { name: key, qty: 0, revenue: 0, orders: 0 };
     map[key].qty += s.quantity;
     map[key].revenue += s.totalValue;
-    map[key].orders += 1;
+    map[key].orders += s.quantity;
   });
 
   const rankedList = Object.values(map).sort((a, b) => b.revenue - a.revenue);
