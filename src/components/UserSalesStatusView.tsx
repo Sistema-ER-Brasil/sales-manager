@@ -20,8 +20,7 @@ import {
   BellRing
 } from 'lucide-react';
 import { formatCurrency, formatNumber, getTodayString } from '../utils/formatters';
-import { getPermissions, ROLE_LABELS } from '../lib/permissions';
-import { UserRole } from '../types';
+import { getPermissions, getRoleLabel } from '../lib/permissions';
 
 export const UserSalesStatusView: React.FC = () => {
   const {
@@ -421,7 +420,7 @@ export const UserSalesStatusView: React.FC = () => {
                     <div className="flex items-center gap-1.5">
                       <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">{u.name}</h3>
                       <span className="text-[9px] font-black px-1.5 py-0.2 rounded uppercase bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
-                        {ROLE_LABELS[u.role as UserRole]}
+                        {getRoleLabel(u.role)}
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 truncate max-w-[200px]">{u.email}</p>
@@ -450,7 +449,7 @@ export const UserSalesStatusView: React.FC = () => {
                   <Store className="w-3 h-3 text-blue-500" /> Canais Sob Responsabilidade:
                 </span>
                 <div className="flex flex-wrap gap-1">
-                  {getPermissions(u.role as UserRole).registerSalesUnrestricted ? (
+                  {getPermissions(u.role).registerSalesUnrestricted ? (
                     <span className="text-[11px] text-slate-600 dark:text-slate-300 font-semibold italic">
                       Todos os canais liberados
                     </span>

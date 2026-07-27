@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { formatDateBR, formatDateTimeBR } from '../utils/formatters';
 import { ChangePasswordModal } from './ChangePasswordModal';
-import { getPermissions, ROLE_LABELS } from '../lib/permissions';
+import { getPermissions, getRoleLabel } from '../lib/permissions';
 
 interface HeaderProps {
   activeTab: string;
@@ -132,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, setIsAu
                   {currentUser.name}
                   {currentUser.role !== 'user' && (
                     <span className="bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 text-[10px] px-1.5 py-0.2 rounded font-medium">
-                      {ROLE_LABELS[currentUser.role]}
+                      {getRoleLabel(currentUser.role)}
                     </span>
                   )}
                 </div>

@@ -1,5 +1,3 @@
-import { UserRole } from '../types';
-
 export interface Permissions {
   registerSales: boolean; // can access "Registrar Vendas" at all
   registerSalesUnrestricted: boolean; // sees all channels/CNPJs, not just assigned ones
@@ -10,74 +8,41 @@ export interface Permissions {
   manageUsers: boolean;
   manageCadastros: boolean; // CNPJs & Marketplaces
   technicalSettings: boolean; // env vars / low-level system info
+  manageProfiles: boolean; // create/edit/delete access profiles (admin only)
 }
 
-const MATRIX: Record<UserRole, Permissions> = {
-  admin: {
-    registerSales: true,
-    registerSalesUnrestricted: true,
-    approveSales: true,
-    manageGoals: true,
-    viewTeamStatus: true,
-    viewAudit: true,
-    manageUsers: true,
-    manageCadastros: true,
-    technicalSettings: true,
-  },
-  diretor: {
-    registerSales: true,
-    registerSalesUnrestricted: true,
-    approveSales: true,
-    manageGoals: true,
-    viewTeamStatus: true,
-    viewAudit: true,
-    manageUsers: true,
-    manageCadastros: true,
-    technicalSettings: false,
-  },
-  gerente: {
-    registerSales: true,
-    registerSalesUnrestricted: true,
-    approveSales: true,
-    manageGoals: true,
-    viewTeamStatus: true,
-    viewAudit: false,
-    manageUsers: false,
-    manageCadastros: false,
-    technicalSettings: false,
-  },
-  analista: {
-    registerSales: false,
-    registerSalesUnrestricted: false,
-    approveSales: false,
-    manageGoals: false,
-    viewTeamStatus: true,
-    viewAudit: true,
-    manageUsers: false,
-    manageCadastros: false,
-    technicalSettings: false,
-  },
-  user: {
-    registerSales: true,
-    registerSalesUnrestricted: false,
-    approveSales: false,
-    manageGoals: false,
-    viewTeamStatus: false,
-    viewAudit: false,
-    manageUsers: false,
-    manageCadastros: false,
-    technicalSettings: false,
-  },
+const NO_PERMISSIONS: Permissions = {
+  registerSales: false,
+  registerSalesUnrestricted: false,
+  approveSales: false,
+  manageGoals: false,
+  viewTeamStatus: false,
+  viewAudit: false,
+  manageUsers: false,
+  manageCadastros: false,
+  technicalSettings: false,
+  manageProfiles: false,
 };
 
-export function getPermissions(role: UserRole): Permissions {
-  return MATRIX[role] || MATRIX.user;
+// Roles are now data (public.roles table), not a hardcoded matrix. The app
+// fetches them once on load and pushes them here via setRolesCache, so the
+// many call sites of getPermissions()/getRoleLabel() can stay synchronous.
+interface RoleLike {
+  id: string;
+  label: string;
+  permissions: Permissions;
 }
 
-export const ROLE_LABELS: Record<UserRole, string> = {
-  admin: 'Administrador',
-  diretor: 'Diretor',
-  gerente: 'Gerente',
-  analista: 'Analista',
-  user: 'Usuário',
-};
+let rolesCache: Record<string, RoleLike> = {};
+
+export function setRolesCache(roles: RoleLike[]): void {
+  rolesCache = Object.fromEntries(roles.map((r) => [r.id, r]));
+}
+
+export function getPermissions(role: string): Permissions {
+  return rolesCache[role]?.permissions || NO_PERMISSIONS;
+}
+
+export function getRoleLabel(role: string): string {
+  return rolesCache[role]?.label || role;
+}

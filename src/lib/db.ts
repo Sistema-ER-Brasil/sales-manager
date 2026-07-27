@@ -10,7 +10,9 @@ import {
   SystemSettings,
   Task,
   TaskComment,
+  Role,
 } from '../types';
+import { Permissions } from './permissions';
 
 // ---- Supabase row shapes (snake_case) <-> app types (camelCase) ----
 
@@ -68,6 +70,24 @@ export function marketplaceToRow(m: Partial<Marketplace>) {
   if (m.color !== undefined) row.color = m.color;
   if (m.iconName !== undefined) row.icon_name = m.iconName;
   if (m.status !== undefined) row.status = m.status;
+  return row;
+}
+
+export function rowToRole(row: any): Role {
+  return {
+    id: row.id,
+    label: row.label,
+    permissions: row.permissions as Permissions,
+    isProtected: row.is_protected,
+  };
+}
+
+export function roleToRow(r: Partial<Role>) {
+  const row: any = {};
+  if (r.id !== undefined) row.id = r.id;
+  if (r.label !== undefined) row.label = r.label;
+  if (r.permissions !== undefined) row.permissions = r.permissions;
+  if (r.isProtected !== undefined) row.is_protected = r.isProtected;
   return row;
 }
 

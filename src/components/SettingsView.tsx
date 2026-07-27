@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Settings, Volume2, VolumeX, Database, Key, ShieldCheck, LogOut, Camera, Loader2, KeyRound, Check, Users as UsersIcon } from 'lucide-react';
+import { Settings, Volume2, VolumeX, Database, Key, ShieldCheck, LogOut, Camera, Loader2, KeyRound, Check, Users as UsersIcon, Lock } from 'lucide-react';
 import { uploadLogoImage } from '../lib/upload';
 import { ChangePasswordModal } from './ChangePasswordModal';
 import { UsersView } from './UsersView';
 import { AuditView } from './AuditView';
+import { ProfilesView } from './ProfilesView';
 import { getPermissions } from '../lib/permissions';
 
 export const SettingsView: React.FC = () => {
   const { settings, updateSettings, currentUser, updateUser, getAccessToken, logout } = useApp();
   const perms = getPermissions(currentUser.role);
-  const hasAnyAdminAccess = perms.technicalSettings || perms.manageUsers || perms.viewAudit;
+  const hasAnyAdminAccess = perms.technicalSettings || perms.manageUsers || perms.viewAudit || perms.manageProfiles;
   const isAdmin = hasAnyAdminAccess;
-  const [adminTab, setAdminTab] = useState<'general' | 'users' | 'audit'>(
-    perms.technicalSettings ? 'general' : perms.manageUsers ? 'users' : 'audit'
+  const [adminTab, setAdminTab] = useState<'general' | 'users' | 'audit' | 'profiles'>(
+    perms.technicalSettings ? 'general' : perms.manageUsers ? 'users' : perms.viewAudit ? 'audit' : 'profiles'
   );
 
   // Self-service profile state (non-admin view)
@@ -186,11 +187,22 @@ export const SettingsView: React.FC = () => {
               <ShieldCheck className="w-3.5 h-3.5" /> Auditoria & Logs
             </button>
           )}
+          {perms.manageProfiles && (
+            <button
+              onClick={() => setAdminTab('profiles')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+                adminTab === 'profiles' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-300'
+              }`}
+            >
+              <Lock className="w-3.5 h-3.5" /> Perfis
+            </button>
+          )}
         </div>
       </div>
 
       {adminTab === 'users' && perms.manageUsers && <UsersView />}
       {adminTab === 'audit' && perms.viewAudit && <AuditView />}
+      {adminTab === 'profiles' && perms.manageProfiles && <ProfilesView />}
 
       {adminTab === 'general' && perms.technicalSettings && (
       <div className="max-w-4xl mx-auto w-full space-y-6">

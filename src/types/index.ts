@@ -1,4 +1,13 @@
-export type UserRole = 'admin' | 'diretor' | 'gerente' | 'analista' | 'user';
+import { Permissions } from '../lib/permissions';
+
+export type UserRole = string;
+
+export interface Role {
+  id: string;
+  label: string;
+  permissions: Permissions;
+  isProtected: boolean;
+}
 
 export interface User {
   id: string;
@@ -97,7 +106,7 @@ export interface AuditLog {
   userId: string;
   userName: string;
   action: 'CREATE' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'IMPORT';
-  entity: 'sales' | 'products' | 'users' | 'marketplaces' | 'companies' | 'goals' | 'tasks';
+  entity: 'sales' | 'products' | 'users' | 'marketplaces' | 'companies' | 'goals' | 'tasks' | 'roles';
   details: string;
   ip: string;
   timestamp: string;

@@ -12,6 +12,7 @@ import {
   PeriodFilter,
   DateRange,
   Task,
+  Role,
 } from '../types';
 import {
   initialProducts,
@@ -41,7 +42,10 @@ import {
   settingsToRow,
   rowToTask,
   taskToRow,
+  rowToRole,
+  roleToRow,
 } from '../lib/db';
+import { setRolesCache } from '../lib/permissions';
 
 type ActionResult = { success: boolean; message?: string };
 
@@ -58,6 +62,7 @@ const GUEST_USER: User = {
 interface AppContextType {
   currentUser: User;
   users: User[];
+  roles: Role[];
   companies: CompanyCNPJ[];
   marketplaces: Marketplace[];
   products: Product[];
@@ -105,6 +110,10 @@ interface AppContextType {
   updateMarketplace: (marketplace: Marketplace) => void;
   deleteMarketplace: (id: string) => void;
 
+  addRole: (role: Omit<Role, 'id' | 'isProtected'>) => void;
+  updateRole: (role: Role) => void;
+  deleteRole: (id: string) => Promise<ActionResult>;
+
   addGoal: (goal: Omit<Goal, 'id'>) => void;
   updateGoal: (goal: Goal) => void;
   deleteGoal: (id: string) => void;
@@ -144,6 +153,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User>(GUEST_USER);
   const [users, setUsers] = useState<User[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [companies, setCompanies] = useState<CompanyCNPJ[]>([]);
   const [marketplaces, setMarketplaces] = useState<Marketplace[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -187,7 +197,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const loadAllData = async () => {
     setIsLoadingData(true);
-    const [companiesRes, marketplacesRes, productsRes, salesRes, goalsRes, notifRes, auditRes, settingsRes, profilesRes, tasksRes] =
+    const [companiesRes, marketplacesRes, productsRes, salesRes, goalsRes, notifRes, auditRes, settingsRes, profilesRes, tasksRes, rolesRes] =
       await Promise.all([
         supabase.from('companies').select('*').order('code'),
         supabase.from('marketplaces').select('*').order('name'),
@@ -199,6 +209,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         supabase.from('settings').select('*').eq('id', true).single(),
         supabase.from('profiles').select('*').order('name'),
         supabase.from('tasks').select('*').order('created_at', { ascending: false }),
+        supabase.from('roles').select('*').order('created_at'),
       ]);
 
     if (companiesRes.data) setCompanies(companiesRes.data.map(rowToCompany));
@@ -211,6 +222,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (settingsRes.data) setSettings(rowToSettings(settingsRes.data));
     if (profilesRes.data) setUsers(profilesRes.data.map(rowToUser));
     if (tasksRes.data) setTasks(tasksRes.data.map(rowToTask));
+    if (rolesRes.data) {
+      const roleList = rolesRes.data.map(rowToRole);
+      setRoles(roleList);
+      setRolesCache(roleList);
+    }
 
     setIsLoadingData(false);
   };
@@ -248,6 +264,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setCompanies([]);
         setMarketplaces([]);
         setUsers([]);
+        setRoles([]);
+        setRolesCache([]);
         return;
       }
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
@@ -629,6 +647,53 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     })();
   };
 
+  const addRole = (r: Omit<Role, 'id' | 'isProtected'>) => {
+    const id = r.label.toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') || `role_${Date.now()}`;
+    const newRole: Role = { ...r, id, isProtected: false };
+    setRoles((prev) => {
+      const next = [...prev, newRole];
+      setRolesCache(next);
+      return next;
+    });
+    addAuditLog('CREATE', 'roles', `Perfil ${r.label} criado`);
+    (async () => {
+      const { error } = await supabase.from('roles').insert(roleToRow(newRole));
+      if (error) console.error('Erro ao salvar perfil:', error.message);
+    })();
+  };
+
+  const updateRole = (r: Role) => {
+    setRoles((prev) => {
+      const next = prev.map((item) => (item.id === r.id ? r : item));
+      setRolesCache(next);
+      return next;
+    });
+    addAuditLog('UPDATE', 'roles', `Perfil ${r.label} alterado`);
+    (async () => {
+      const { error } = await supabase.from('roles').update(roleToRow(r)).eq('id', r.id);
+      if (error) console.error('Erro ao atualizar perfil:', error.message);
+    })();
+  };
+
+  const deleteRole = async (id: string): Promise<ActionResult> => {
+    const { error } = await supabase.from('roles').delete().eq('id', id);
+    if (error) {
+      return {
+        success: false,
+        message: error.code === '23503'
+          ? 'Este perfil está em uso por um ou mais usuários e não pode ser excluído.'
+          : error.message,
+      };
+    }
+    setRoles((prev) => {
+      const next = prev.filter((item) => item.id !== id);
+      setRolesCache(next);
+      return next;
+    });
+    addAuditLog('DELETE', 'roles', `Perfil ${id} removido`);
+    return { success: true };
+  };
+
   const addGoal = (g: Omit<Goal, 'id'>) => {
     const newG: Goal = { ...g, id: `goal_${Date.now()}` };
     setGoals((prev) => [...prev, newG]);
@@ -914,6 +979,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       value={{
         currentUser,
         users,
+        roles,
         companies,
         marketplaces,
         products,
@@ -951,6 +1017,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addMarketplace,
         updateMarketplace,
         deleteMarketplace,
+        addRole,
+        updateRole,
+        deleteRole,
         addGoal,
         updateGoal,
         deleteGoal,
