@@ -232,6 +232,25 @@ export const SalesHistoryView: React.FC = () => {
           </select>
         </div>
 
+        {/* Custom Date Range Picker */}
+        {periodFilter === 'custom' && (
+          <div className="flex items-center gap-1.5 pt-1">
+            <input
+              type="date"
+              value={dateRange.startDate}
+              onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+              className="px-2 py-1 text-[11px] rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+            />
+            <span className="text-[10px] text-slate-400">até</span>
+            <input
+              type="date"
+              value={dateRange.endDate}
+              onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+              className="px-2 py-1 text-[11px] rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+            />
+          </div>
+        )}
+
         {filteredUserName && (
           <div className="flex items-center gap-2 pt-1">
             <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300">
@@ -397,6 +416,16 @@ export const SalesHistoryView: React.FC = () => {
                   type="text"
                   value={editingSale.productName}
                   onChange={(e) => setEditingSale({ ...editingSale, productName: e.target.value })}
+                  className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1">Data da Venda</label>
+                <input
+                  type="date"
+                  value={editingSale.date}
+                  onChange={(e) => setEditingSale({ ...editingSale, date: e.target.value })}
                   className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
                 />
               </div>

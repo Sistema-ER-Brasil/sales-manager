@@ -89,16 +89,20 @@ alter table public.profiles add constraint profiles_role_fkey
   foreign key (role) references public.roles(id);
 
 -- Everyone authenticated needs to read role permissions to know what to show.
+drop policy if exists "roles_select_authenticated" on public.roles;
 create policy "roles_select_authenticated" on public.roles
   for select to authenticated using (true);
 
 -- Only admin can create/edit/delete roles; protected roles (admin itself)
 -- can never be edited or deleted through the app, so there is always at
 -- least one role with full access.
+drop policy if exists "roles_insert_admin" on public.roles;
 create policy "roles_insert_admin" on public.roles
   for insert to authenticated with check (public.is_admin());
+drop policy if exists "roles_update_admin_unprotected" on public.roles;
 create policy "roles_update_admin_unprotected" on public.roles
   for update to authenticated using (public.is_admin() and not is_protected);
+drop policy if exists "roles_delete_admin_unprotected" on public.roles;
 create policy "roles_delete_admin_unprotected" on public.roles
   for delete to authenticated using (public.is_admin() and not is_protected);
 
