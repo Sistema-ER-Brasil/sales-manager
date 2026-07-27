@@ -83,10 +83,13 @@ export const CadastrosView: React.FC = () => {
 
   const handleSaveCompany = (e: React.FormEvent) => {
     e.preventDefault();
+    const trimmedCode = code.trim();
+    const trimmedName = name.trim();
+    const trimmedCnpj = cnpj.trim();
     if (editingCompId) {
-      updateCompany({ id: editingCompId, code, name, cnpj, status: 'active', badgeColor: 'bg-blue-600 text-white' });
+      updateCompany({ id: editingCompId, code: trimmedCode, name: trimmedName, cnpj: trimmedCnpj, status: 'active', badgeColor: 'bg-blue-600 text-white' });
     } else {
-      addCompany({ code, name, cnpj, status: 'active', badgeColor: 'bg-blue-600 text-white' });
+      addCompany({ code: trimmedCode, name: trimmedName, cnpj: trimmedCnpj, status: 'active', badgeColor: 'bg-blue-600 text-white' });
     }
     setCompModal(false);
   };

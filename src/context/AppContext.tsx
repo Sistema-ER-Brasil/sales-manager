@@ -463,7 +463,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     (async () => {
       const { error } = await supabase.from('sales').insert(saleToRow(newSale));
-      if (error) console.error('Erro ao salvar venda:', error.message);
+      if (error) {
+        console.error('Erro ao salvar venda:', error.message);
+        setSales((prev) => prev.filter((s) => s.id !== id));
+        setNotifications((prev) => prev.filter((n) => n.id !== newNotif.id));
+        alert(`Não foi possível salvar esta venda. Ela NÃO foi gravada — verifique os dados e tente novamente.\n\nDetalhe técnico: ${error.message}`);
+        return;
+      }
       await supabase.from('notifications').insert(notificationToRow(newNotif));
     })();
   };
@@ -498,7 +504,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     (async () => {
       const { error } = await supabase.from('sales').insert(newItems.map(saleToRow));
-      if (error) console.error('Erro ao salvar lote de vendas:', error.message);
+      if (error) {
+        console.error('Erro ao salvar lote de vendas:', error.message);
+        const failedIds = new Set(newItems.map((i) => i.id));
+        setSales((prev) => prev.filter((s) => !failedIds.has(s.id)));
+        setNotifications((prev) => prev.filter((n) => n.id !== newNotif.id));
+        alert(`Não foi possível salvar os lançamentos em lote. Eles NÃO foram gravados — verifique os dados e tente novamente.\n\nDetalhe técnico: ${error.message}`);
+        return;
+      }
       await supabase.from('notifications').insert(notificationToRow(newNotif));
     })();
   };
@@ -590,8 +603,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const addCompany = (c: Omit<CompanyCNPJ, 'id'>) => {
-    const id = c.code || `CMP_${Date.now()}`;
-    const newComp: CompanyCNPJ = { ...c, id };
+    const trimmedCode = c.code.trim();
+    const id = trimmedCode || `CMP_${Date.now()}`;
+    const newComp: CompanyCNPJ = { ...c, code: trimmedCode, id };
     setCompanies((prev) => [...prev, newComp]);
     addAuditLog('CREATE', 'companies', `CNPJ/Empresa ${c.code} (${c.name}) criada`);
     (async () => {
@@ -601,10 +615,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const updateCompany = (c: CompanyCNPJ) => {
-    setCompanies((prev) => prev.map((item) => (item.id === c.id ? c : item)));
-    addAuditLog('UPDATE', 'companies', `CNPJ ${c.code} atualizado`);
+    const trimmed: CompanyCNPJ = { ...c, code: c.code.trim(), name: c.name.trim(), cnpj: c.cnpj.trim() };
+    setCompanies((prev) => prev.map((item) => (item.id === trimmed.id ? trimmed : item)));
+    addAuditLog('UPDATE', 'companies', `CNPJ ${trimmed.code} atualizado`);
     (async () => {
-      const { error } = await supabase.from('companies').update(companyToRow(c)).eq('id', c.id);
+      const { error } = await supabase.from('companies').update(companyToRow(trimmed)).eq('id', trimmed.id);
       if (error) console.error('Erro ao atualizar empresa:', error.message);
     })();
   };
