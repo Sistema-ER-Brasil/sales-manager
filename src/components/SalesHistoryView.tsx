@@ -420,14 +420,41 @@ export const SalesHistoryView: React.FC = () => {
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold mb-1">Data da Venda</label>
+                  <input
+                    type="date"
+                    value={editingSale.date}
+                    onChange={(e) => setEditingSale({ ...editingSale, date: e.target.value })}
+                    className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold mb-1">Marketplace</label>
+                  <select
+                    value={editingSale.marketplaceId}
+                    onChange={(e) => setEditingSale({ ...editingSale, marketplaceId: e.target.value })}
+                    className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+                  >
+                    {marketplaces.map((m) => (
+                      <option key={m.id} value={m.id}>{m.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               <div>
-                <label className="block font-bold mb-1">Data da Venda</label>
-                <input
-                  type="date"
-                  value={editingSale.date}
-                  onChange={(e) => setEditingSale({ ...editingSale, date: e.target.value })}
+                <label className="block font-bold mb-1">Empresa / CNPJ</label>
+                <select
+                  value={editingSale.companyId}
+                  onChange={(e) => setEditingSale({ ...editingSale, companyId: e.target.value })}
                   className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
-                />
+                >
+                  {companies.map((c) => (
+                    <option key={c.id} value={c.code}>{c.code} - {c.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
