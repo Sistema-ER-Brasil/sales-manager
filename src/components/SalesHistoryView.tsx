@@ -143,7 +143,7 @@ export const SalesHistoryView: React.FC = () => {
     exportSalesToPDF('Histórico de Vendas de Marketplaces', headers, rows, 'historico_vendas');
   };
 
-  const resolveCompanyLabel = (companyId: string) => companies.find((c) => c.code === companyId)?.name || companyId;
+  const resolveCompanyLabel = (companyId: string) => companies.find((c) => c.code === companyId)?.code || companyId;
   const resolveMarketplace = (marketplaceId: string) => marketplaces.find((m) => m.id === marketplaceId);
 
   const toggleSelected = (id: string) => {
