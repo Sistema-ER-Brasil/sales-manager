@@ -3,7 +3,6 @@ import { useApp } from '../context/AppContext';
 import { getTodayString, formatCurrency } from '../utils/formatters';
 import { PlusCircle, Save, CheckCircle2, ShoppingBag, Layers, AlertCircle, Plus, Trash2, Clock, Store, X, ShieldAlert } from 'lucide-react';
 import { SalesHistoryView } from './SalesHistoryView';
-import { LancamentoShareCard } from './LancamentoShareCard';
 import { getPermissions } from '../lib/permissions';
 
 export const SalesEntryForm: React.FC = () => {
@@ -429,16 +428,6 @@ export const SalesEntryForm: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* Cartão de Lançamento para compartilhar no WhatsApp */}
-          <LancamentoShareCard
-            companyLabel={availableCompanies.find((c) => c.code === companyId)?.name || companyId}
-            marketplaceLabel={availableMarketplaces.find((m) => m.id === marketplaceId)?.name || marketplaceId}
-            marketplaceColor={availableMarketplaces.find((m) => m.id === marketplaceId)?.color}
-            date={date}
-            quantity={quantity}
-            totalValue={totalValue}
-          />
 
           {/* Observações */}
           <div>

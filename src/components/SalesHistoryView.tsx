@@ -5,6 +5,8 @@ import { formatCurrency, formatDateBR, formatDateTimeBR } from '../utils/formatt
 import { exportSalesToPDF, exportToExcel, exportToCSV } from '../utils/exportUtils';
 import { SaleItem } from '../types';
 import { ConfirmDialog } from './ConfirmDialog';
+import { LancamentoShareCard } from './LancamentoShareCard';
+import { LancamentosLoteCard } from './LancamentosLoteCard';
 import { getPermissions } from '../lib/permissions';
 import {
   History,
@@ -19,6 +21,7 @@ import {
   Info,
   Send,
   CheckCircle2,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 export const SalesHistoryView: React.FC = () => {
@@ -53,6 +56,9 @@ export const SalesHistoryView: React.FC = () => {
   const [confirmAction, setConfirmAction] = useState<
     { type: 'submit' | 'delete'; sale: SaleItem } | null
   >(null);
+  const [cardSale, setCardSale] = useState<SaleItem | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showBatchCard, setShowBatchCard] = useState(false);
 
   // Filtered sales
   let filtered = filterSalesByPeriodAndFilters(
@@ -137,6 +143,26 @@ export const SalesHistoryView: React.FC = () => {
     exportSalesToPDF('Histórico de Vendas de Marketplaces', headers, rows, 'historico_vendas');
   };
 
+  const resolveCompanyLabel = (companyId: string) => companies.find((c) => c.code === companyId)?.name || companyId;
+  const resolveMarketplace = (marketplaceId: string) => marketplaces.find((m) => m.id === marketplaceId);
+
+  const toggleSelected = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const allFilteredSelected = filtered.length > 0 && filtered.every((s) => selectedIds.has(s.id));
+
+  const toggleSelectAll = () => {
+    setSelectedIds(allFilteredSelected ? new Set() : new Set(filtered.map((s) => s.id)));
+  };
+
+  const selectedSales = filtered.filter((s) => selectedIds.has(s.id));
+
   return (
     <div className="space-y-6">
       {/* Top Filter & Search Bar */}
@@ -173,6 +199,16 @@ export const SalesHistoryView: React.FC = () => {
             >
               <Download className="w-3.5 h-3.5" />
               <span>CSV</span>
+            </button>
+
+            <button
+              onClick={() => setShowBatchCard(true)}
+              disabled={selectedIds.size === 0}
+              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+              title="Gerar cartão de lançamento em JPG com as vendas selecionadas"
+            >
+              <ImageIcon className="w-3.5 h-3.5" />
+              <span>Cartão dos Selecionados{selectedIds.size > 0 ? ` (${selectedIds.size})` : ''}</span>
             </button>
           </div>
         </div>
@@ -275,6 +311,15 @@ export const SalesHistoryView: React.FC = () => {
           <table className="w-full text-xs text-left border-collapse">
             <thead>
               <tr className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase text-[10px]">
+                <th className="p-3 w-8">
+                  <input
+                    type="checkbox"
+                    checked={allFilteredSelected}
+                    onChange={toggleSelectAll}
+                    className="w-3.5 h-3.5 rounded accent-blue-600 cursor-pointer"
+                    title="Selecionar todos"
+                  />
+                </th>
                 <th className="p-3">Data</th>
                 <th className="p-3">Marketplace</th>
                 <th className="p-3">CNPJ</th>
@@ -290,7 +335,7 @@ export const SalesHistoryView: React.FC = () => {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="p-8 text-center text-slate-500">
+                  <td colSpan={11} className="p-8 text-center text-slate-500">
                     Nenhum registro de venda encontrado para os filtros selecionados.
                   </td>
                 </tr>
@@ -303,6 +348,14 @@ export const SalesHistoryView: React.FC = () => {
 
                   return (
                   <tr key={sale.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="p-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(sale.id)}
+                        onChange={() => toggleSelected(sale.id)}
+                        className="w-3.5 h-3.5 rounded accent-blue-600 cursor-pointer"
+                      />
+                    </td>
                     <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">
                       {formatDateBR(sale.date)}
                     </td>
@@ -348,6 +401,14 @@ export const SalesHistoryView: React.FC = () => {
                           title="Detalhes de Auditoria"
                         >
                           <Info className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          onClick={() => setCardSale(sale)}
+                          className="p-1.5 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400"
+                          title="Gerar Cartão de Lançamento (JPG)"
+                        >
+                          <ImageIcon className="w-4 h-4" />
                         </button>
 
                         {canEdit && (
@@ -527,6 +588,57 @@ export const SalesHistoryView: React.FC = () => {
             <button onClick={() => setViewingAuditSale(null)} className="w-full py-2 bg-slate-800 text-white font-bold rounded-lg">
               Fechar
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* CARTÃO DE LANÇAMENTO (VENDA ÚNICA) MODAL */}
+      {cardSale && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="max-w-lg w-full my-8 space-y-3">
+            <div className="flex justify-end">
+              <button
+                onClick={() => setCardSale(null)}
+                className="flex items-center gap-1.5 text-xs font-bold text-white/80 hover:text-white"
+              >
+                <X className="w-4 h-4" /> Fechar
+              </button>
+            </div>
+            <LancamentoShareCard
+              companyLabel={resolveCompanyLabel(cardSale.companyId)}
+              marketplaceLabel={resolveMarketplace(cardSale.marketplaceId)?.name || cardSale.marketplaceId}
+              marketplaceColor={resolveMarketplace(cardSale.marketplaceId)?.color}
+              date={cardSale.date}
+              quantity={cardSale.quantity}
+              totalValue={cardSale.totalValue}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* CARTÃO DE LANÇAMENTOS SELECIONADOS (LOTE) MODAL */}
+      {showBatchCard && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="max-w-lg w-full my-8 space-y-3">
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowBatchCard(false)}
+                className="flex items-center gap-1.5 text-xs font-bold text-white/80 hover:text-white"
+              >
+                <X className="w-4 h-4" /> Fechar
+              </button>
+            </div>
+            <LancamentosLoteCard
+              items={selectedSales.map((s) => ({
+                id: s.id,
+                date: s.date,
+                companyLabel: resolveCompanyLabel(s.companyId),
+                marketplaceLabel: resolveMarketplace(s.marketplaceId)?.name || s.marketplaceId,
+                marketplaceColor: resolveMarketplace(s.marketplaceId)?.color,
+                quantity: s.quantity,
+                totalValue: s.totalValue,
+              }))}
+            />
           </div>
         </div>
       )}
