@@ -24,6 +24,8 @@ import {
   Send as SentIcon,
   Eye,
   UserPlus,
+  CheckCircle2,
+  AlertTriangle,
 } from 'lucide-react';
 
 const COLUMNS: { status: Task['status']; label: string }[] = [
@@ -95,6 +97,43 @@ export const TasksView: React.FC = () => {
     if (filterTab === 'watching') return watchedTaskIds.has(t.id);
     return true;
   });
+
+  // Performance stats — computed over ALL tasks in the system, visible to every user regardless of role.
+  const totalTasks = tasks.length;
+  const pendingCount = tasks.filter((t) => t.status === 'pending').length;
+  const inProgressCount = tasks.filter((t) => t.status === 'in_progress').length;
+  const doneCount = tasks.filter((t) => t.status === 'done').length;
+  const completionRate = totalTasks > 0 ? (doneCount / totalTasks) * 100 : 0;
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const overdueCount = tasks.filter((t) => t.status !== 'done' && t.dueDate && t.dueDate < todayStr).length;
+  const priorityCounts = {
+    high: tasks.filter((t) => t.priority === 'high').length,
+    medium: tasks.filter((t) => t.priority === 'medium').length,
+    low: tasks.filter((t) => t.priority === 'low').length,
+  };
+
+  interface AssigneeStat {
+    userId: string;
+    userName: string;
+    total: number;
+    done: number;
+    overdue: number;
+  }
+
+  const assigneeStatsByUser: Record<string, AssigneeStat> = {};
+  tasks.forEach((t) => {
+    if (!assigneeStatsByUser[t.assignedTo]) {
+      assigneeStatsByUser[t.assignedTo] = { userId: t.assignedTo, userName: t.assignedToName, total: 0, done: 0, overdue: 0 };
+    }
+    const stat = assigneeStatsByUser[t.assignedTo];
+    stat.total += 1;
+    if (t.status === 'done') stat.done += 1;
+    if (t.status !== 'done' && t.dueDate && t.dueDate < todayStr) stat.overdue += 1;
+  });
+
+  const assigneeStats = Object.values(assigneeStatsByUser)
+    .map((a) => ({ ...a, completionRate: a.total > 0 ? (a.done / a.total) * 100 : 0 }))
+    .sort((a, b) => b.completionRate - a.completionRate || b.total - a.total);
 
   const openCreate = () => {
     setTitle('');
@@ -186,6 +225,138 @@ export const TasksView: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* TASK PERFORMANCE KPI CARDS */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-2xs">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Total de Tarefas
+            </span>
+            <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+              <ListChecks className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+            {totalTasks}
+          </div>
+          <div className="text-[10px] text-slate-500 mt-1">
+            {pendingCount} pendente{pendingCount !== 1 ? 's' : ''} · {inProgressCount} em andamento · {doneCount} concluída{doneCount !== 1 ? 's' : ''}
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-2xs">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Taxa de Conclusão
+            </span>
+            <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+            {completionRate.toFixed(0)}%
+          </div>
+          <div className="text-[10px] text-slate-500 mt-1">{doneCount} de {totalTasks} concluídas</div>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-2xs">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Em Atraso
+            </span>
+            <div
+              className={`p-1.5 rounded-lg ${
+                overdueCount > 0
+                  ? 'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400'
+                  : 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+              }`}
+            >
+              <AlertTriangle className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div
+            className={`text-base sm:text-lg font-bold tracking-tight ${
+              overdueCount > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-900 dark:text-white'
+            }`}
+          >
+            {overdueCount}
+          </div>
+          <div className="text-[10px] text-slate-500 mt-1">Prazo vencido e ainda não concluída</div>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-2xs">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Por Prioridade
+            </span>
+            <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+              <Flag className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="space-y-0.5 mt-1.5">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-slate-500 dark:text-slate-400">Alta</span>
+              <span className="font-bold text-slate-900 dark:text-white">{priorityCounts.high}</span>
+            </div>
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-slate-500 dark:text-slate-400">Média</span>
+              <span className="font-bold text-slate-900 dark:text-white">{priorityCounts.medium}</span>
+            </div>
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-slate-500 dark:text-slate-400">Baixa</span>
+              <span className="font-bold text-slate-900 dark:text-white">{priorityCounts.low}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* PERFORMANCE BY ASSIGNEE — visible to every user, including their own performance */}
+      {assigneeStats.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide flex items-center gap-2">
+              <UserIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              Desempenho por Responsável
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {assigneeStats.map((a) => (
+              <div
+                key={a.userId}
+                className={`bg-white dark:bg-slate-900 border rounded-2xl p-4 shadow-xs transition-all ${
+                  a.userId === currentUser.id
+                    ? 'border-blue-500 ring-1 ring-blue-500/30'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-blue-500'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
+                    {a.userName}
+                    {a.userId === currentUser.id && <span className="text-blue-600 dark:text-blue-400"> (você)</span>}
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-semibold shrink-0">
+                    {a.total} tarefa{a.total !== 1 ? 's' : ''}
+                  </span>
+                </div>
+
+                <div className="text-base font-extrabold text-slate-900 dark:text-white mb-1">
+                  {a.completionRate.toFixed(0)}%
+                </div>
+
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <span>
+                    Concluídas: <strong className="text-slate-800 dark:text-slate-200">{a.done}</strong>
+                  </span>
+                  <span className={a.overdue > 0 ? 'text-red-600 dark:text-red-400 font-bold' : ''}>
+                    Atrasadas: <strong>{a.overdue}</strong>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Filter tabs */}
       <div className="flex items-center gap-1.5">
