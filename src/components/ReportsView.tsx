@@ -346,15 +346,31 @@ export const ReportsView: React.FC = () => {
                   {companies.map((c) => {
                     const q = row[`${c.code}_qty`] || 0;
                     const v = row[`${c.code}_val`] || 0;
+                    const isLinked = (c.marketplaceIds || []).includes(row.marketplaceId);
                     return (
-                      <td key={c.code} className="p-3 text-center border-l border-slate-100 dark:border-slate-800/50 font-medium">
+                      <td
+                        key={c.code}
+                        className={`p-3 text-center border-l border-slate-100 dark:border-slate-800/50 font-medium ${
+                          !isLinked ? 'bg-slate-50/80 dark:bg-slate-800/40' : ''
+                        }`}
+                      >
                         {q > 0 ? (
                           <div>
                             <span className="text-slate-500 dark:text-slate-400 mr-1">{q} un</span>
                             <span className="font-bold text-slate-900 dark:text-slate-100">{formatCurrency(v)}</span>
                           </div>
+                        ) : isLinked ? (
+                          <div>
+                            <span className="text-slate-500 dark:text-slate-400 mr-1">0 un</span>
+                            <span className="text-slate-400 dark:text-slate-500">{formatCurrency(0)}</span>
+                          </div>
                         ) : (
-                          <span className="text-slate-300 dark:text-slate-600">-</span>
+                          <span
+                            className="text-slate-300 dark:text-slate-600"
+                            title={`${row.marketplaceName} não está vinculado ao CNPJ ${c.code} (Configurações → Cadastros)`}
+                          >
+                            — não vinculado
+                          </span>
                         )}
                       </td>
                     );

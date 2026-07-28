@@ -63,7 +63,7 @@ export function exportSalesToPDF(title: string, headers: string[], rows: any[][]
 }
 
 export interface MatrixExportParams {
-  companies: { id: string; name: string; code: string }[];
+  companies: { id: string; name: string; code: string; marketplaceIds?: string[] }[];
   matrixData: {
     marketplaceId: string;
     marketplaceName: string;
@@ -118,6 +118,7 @@ export async function exportMatrixToJpeg({
         .map((c) => {
           const q = row[`${c.code}_qty`] || 0;
           const v = row[`${c.code}_val`] || 0;
+          const isLinked = (c.marketplaceIds || []).includes(row.marketplaceId);
           if (q > 0) {
             return `
               <td style="padding: 12px 10px; text-align: center; border-left: 1px solid #e2e8f0; font-size: 11px; background-color: ${bg}; color: #0f172a;">
@@ -126,9 +127,17 @@ export async function exportMatrixToJpeg({
               </td>
             `;
           }
+          if (isLinked) {
+            return `
+              <td style="padding: 12px 10px; text-align: center; border-left: 1px solid #e2e8f0; font-size: 11px; background-color: ${bg}; color: #94a3b8;">
+                <span style="margin-right: 4px;">0 un</span>
+                <span>${formatCurrency(0)}</span>
+              </td>
+            `;
+          }
           return `
-            <td style="padding: 12px 10px; text-align: center; border-left: 1px solid #e2e8f0; color: #cbd5e1; font-size: 12px; background-color: ${bg};">
-              -
+            <td style="padding: 12px 10px; text-align: center; border-left: 1px solid #e2e8f0; color: #cbd5e1; font-size: 10px; background-color: #f1f5f9;">
+              — não vinculado
             </td>
           `;
         })
