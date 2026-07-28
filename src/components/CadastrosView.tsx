@@ -14,6 +14,7 @@ export const CadastrosView: React.FC = () => {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [cnpj, setCnpj] = useState('');
+  const [compMarketplaceIds, setCompMarketplaceIds] = useState<string[]>([]);
   const [compLogoBust, setCompLogoBust] = useState(0);
   const [compLogoUploading, setCompLogoUploading] = useState(false);
   const [compLogoError, setCompLogoError] = useState('');
@@ -87,9 +88,9 @@ export const CadastrosView: React.FC = () => {
     const trimmedName = name.trim();
     const trimmedCnpj = cnpj.trim();
     if (editingCompId) {
-      updateCompany({ id: editingCompId, code: trimmedCode, name: trimmedName, cnpj: trimmedCnpj, status: 'active', badgeColor: 'bg-blue-600 text-white' });
+      updateCompany({ id: editingCompId, code: trimmedCode, name: trimmedName, cnpj: trimmedCnpj, status: 'active', badgeColor: 'bg-blue-600 text-white', marketplaceIds: compMarketplaceIds });
     } else {
-      addCompany({ code: trimmedCode, name: trimmedName, cnpj: trimmedCnpj, status: 'active', badgeColor: 'bg-blue-600 text-white' });
+      addCompany({ code: trimmedCode, name: trimmedName, cnpj: trimmedCnpj, status: 'active', badgeColor: 'bg-blue-600 text-white', marketplaceIds: compMarketplaceIds });
     }
     setCompModal(false);
   };
@@ -122,6 +123,7 @@ export const CadastrosView: React.FC = () => {
               setCode('');
               setName('');
               setCnpj('');
+              setCompMarketplaceIds([]);
               setCompLogoError('');
               setCompModal(true);
             }}
@@ -149,6 +151,23 @@ export const CadastrosView: React.FC = () => {
                   </span>
                   <div className="font-bold text-xs text-slate-900 dark:text-slate-100 mt-1">{c.name}</div>
                   <div className="text-[11px] text-slate-500 font-mono">{c.cnpj}</div>
+                  <div className="flex flex-wrap gap-1 mt-1.5">
+                    {(c.marketplaceIds || []).length === 0 ? (
+                      <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">Nenhum marketplace vinculado</span>
+                    ) : (
+                      marketplaces
+                        .filter((m) => c.marketplaceIds.includes(m.id))
+                        .map((m) => (
+                          <span
+                            key={m.id}
+                            className="text-[9px] font-bold px-1.5 py-0.5 rounded-md text-white"
+                            style={{ backgroundColor: m.color }}
+                          >
+                            {m.name}
+                          </span>
+                        ))
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -159,6 +178,7 @@ export const CadastrosView: React.FC = () => {
                     setCode(c.code);
                     setName(c.name);
                     setCnpj(c.cnpj);
+                    setCompMarketplaceIds(c.marketplaceIds || []);
                     setCompModal(true);
                   }}
                   className="p-1.5 text-slate-400 hover:text-blue-900"
@@ -283,6 +303,39 @@ export const CadastrosView: React.FC = () => {
               <div>
                 <label className="block font-bold mb-1">CNPJ Formatado</label>
                 <input type="text" required value={cnpj} onChange={(e) => setCnpj(e.target.value)} placeholder="00.000.000/0001-00" className="w-full p-2 border rounded-lg font-mono" />
+              </div>
+              <div>
+                <label className="block font-bold mb-1.5">Marketplaces deste CNPJ</label>
+                {marketplaces.length === 0 ? (
+                  <p className="text-[11px] text-slate-400 italic">Nenhum marketplace cadastrado ainda.</p>
+                ) : (
+                  <div className="grid grid-cols-2 gap-1.5 max-h-40 overflow-y-auto p-1">
+                    {marketplaces.map((m) => {
+                      const checked = compMarketplaceIds.includes(m.id);
+                      return (
+                        <label
+                          key={m.id}
+                          className={`flex items-center gap-1.5 px-2 py-1.5 border rounded-lg cursor-pointer text-[11px] font-semibold ${
+                            checked ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() =>
+                              setCompMarketplaceIds((prev) =>
+                                checked ? prev.filter((id) => id !== m.id) : [...prev, m.id]
+                              )
+                            }
+                            className="accent-blue-600"
+                          />
+                          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
+                          {m.name}
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               <div className="flex justify-end gap-2 pt-3">
                 <button type="button" onClick={() => setCompModal(false)} className="px-3 py-1.5 border rounded-lg">Cancelar</button>

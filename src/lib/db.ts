@@ -37,6 +37,7 @@ export function rowToCompany(row: any): CompanyCNPJ {
     cnpj: row.cnpj,
     status: row.status,
     badgeColor: row.badge_color,
+    marketplaceIds: row.marketplace_ids || [],
   };
 }
 
@@ -48,6 +49,7 @@ export function companyToRow(c: Partial<CompanyCNPJ>) {
   if (c.cnpj !== undefined) row.cnpj = c.cnpj;
   if (c.status !== undefined) row.status = c.status;
   if (c.badgeColor !== undefined) row.badge_color = c.badgeColor;
+  if (c.marketplaceIds !== undefined) row.marketplace_ids = c.marketplaceIds;
   return row;
 }
 

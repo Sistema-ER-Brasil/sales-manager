@@ -27,6 +27,7 @@ export interface CompanyCNPJ {
   cnpj: string; // e.g. 12.345.678/0001-90
   status: 'active' | 'inactive';
   badgeColor: string;
+  marketplaceIds: string[]; // marketplaces (ids) that operate under this CNPJ
 }
 
 export interface Marketplace {

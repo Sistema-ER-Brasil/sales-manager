@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { filterSalesByPeriodAndFilters, getPeriodDateRange } from '../utils/filterUtils';
 import { formatCurrency, formatNumber, formatDateBR } from '../utils/formatters';
 import { exportToExcel, exportSalesToPDF, exportToCSV, exportMatrixToJpeg } from '../utils/exportUtils';
-import { BarChart3, FileSpreadsheet, FileText, Image as ImageIcon, Building2, ShoppingBag, Package, User, Table as TableIcon, Download, Loader2 } from 'lucide-react';
+import { BarChart3, FileSpreadsheet, FileText, Image as ImageIcon, Building2, ShoppingBag, Package, User, Table as TableIcon, Download, Loader2, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 export const ReportsView: React.FC = () => {
   const { sales, companies, marketplaces, products, users, periodFilter, setPeriodFilter, dateRange, setDateRange } = useApp();
@@ -387,6 +387,72 @@ export const ReportsView: React.FC = () => {
                 </td>
               </tr>
             </tfoot>
+          </table>
+        </div>
+      </div>
+
+      {/* MARKETPLACE COVERAGE / GAPS PER CNPJ */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3">
+        <div className="flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <AlertTriangle className="w-5 h-5 text-amber-500" />
+          <div>
+            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wide">
+              Marketplaces Não Configurados por CNPJ
+            </h3>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              Canais ainda não vinculados a cada CNPJ. Configure em Configurações → Cadastros.
+            </p>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-900 text-white font-bold text-[11px] uppercase tracking-wider">
+                <th className="p-3 rounded-tl-xl">CNPJ</th>
+                <th className="p-3 border-l border-slate-800">Marketplaces Configurados</th>
+                <th className="p-3 border-l border-slate-800 rounded-tr-xl">Marketplaces Faltantes</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              {companies.map((c) => {
+                const activeMarketplaces = marketplaces.filter((m) => m.status === 'active');
+                const configuredIds = new Set(c.marketplaceIds || []);
+                const configured = activeMarketplaces.filter((m) => configuredIds.has(m.id));
+                const missing = activeMarketplaces.filter((m) => !configuredIds.has(m.id));
+                return (
+                  <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors align-top">
+                    <td className="p-3 font-bold text-slate-800 dark:text-slate-100 whitespace-nowrap">{c.code}</td>
+                    <td className="p-3 border-l border-slate-100 dark:border-slate-800/50">
+                      {configured.length === 0 ? (
+                        <span className="text-slate-300 dark:text-slate-600">-</span>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {configured.map((m) => (
+                            <span key={m.id} className="text-[10px] font-bold px-1.5 py-0.5 rounded-md text-white flex items-center gap-1" style={{ backgroundColor: m.color }}>
+                              <CheckCircle2 className="w-2.5 h-2.5" /> {m.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-3 border-l border-slate-100 dark:border-slate-800/50">
+                      {missing.length === 0 ? (
+                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">Completo — todos configurados</span>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {missing.map((m) => (
+                            <span key={m.id} className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400 border border-amber-300 dark:border-amber-800">
+                              {m.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
         </div>
       </div>
